@@ -1,9 +1,8 @@
 package de.wariashi.bomberbew;
 
-import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 
@@ -14,22 +13,19 @@ public class BomberBew extends JFrame {
 	}
 
 	public BomberBew() {
-		addWindowListener(new WindowAdapter() {
+		addKeyListener(new KeyAdapter() {
 			@Override
-			public void windowClosing(WindowEvent event) {
-				System.exit(0);
+			public void keyReleased(KeyEvent key) {
+				if (key.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					System.exit(0);
+				}
 			}
 		});
 
-		setSize(800, 600);
 		setTitle("BomberBEW");
-
-		// set position to the center of the screen
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-		var positionX = (dimension.width - getSize().width) / 2;
-		var positionY = (dimension.height - getSize().height) / 2;
-		setLocation(positionX, positionY);
-
+		setUndecorated(true);
+		setLocation(0, 0);
+		setSize(Toolkit.getDefaultToolkit().getScreenSize());
 		setVisible(true);
 	}
 }
