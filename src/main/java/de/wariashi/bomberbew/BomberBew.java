@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class BomberBew extends JFrame {
 	private JPanel viewport;
-	private Map map = new Map();
+	private transient Map map = new Map();
 
 	public static void main(String[] args) {
 		new BomberBew();

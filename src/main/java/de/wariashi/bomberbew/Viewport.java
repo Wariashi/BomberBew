@@ -1,12 +1,16 @@
 package de.wariashi.bomberbew;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class Viewport extends JPanel {
-	private Map map;
+	private static final int TILE_SIZE = 32;
+
+	private transient Map map;
 
 	public Viewport(Map map) {
 		this.map = map;
@@ -14,7 +18,7 @@ public class Viewport extends JPanel {
 
 	@Override
 	public void paint(Graphics graphics) {
-		var mapImage = map.getImage();
+		var mapImage = createMap();
 
 		var mapWidth = mapImage.getWidth();
 		var mapHeight = mapImage.getHeight();
@@ -43,5 +47,28 @@ public class Viewport extends JPanel {
 			var offset = (panelHeight - height) / 2;
 			graphics.drawImage(mapImage, 0, offset, width, offset + height, 0, 0, mapWidth, mapHeight, null);
 		}
+	}
+
+	private BufferedImage createMap() {
+		var imageWidth = map.getWidth() * TILE_SIZE;
+		var imageHeight = map.getHeight() * TILE_SIZE;
+
+		var image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+		var graphics = image.createGraphics();
+
+		graphics.setColor(Color.GRAY);
+		for (var tileY = 0; tileY < map.getHeight(); tileY++) {
+			for (var tileX = 0; tileX < map.getWidth(); tileX++) {
+				if (map.isWall(tileX, tileY)) {
+					var x = tileX * TILE_SIZE + 1;
+					var y = tileY * TILE_SIZE + 1;
+					var width = TILE_SIZE - 2;
+					var height = TILE_SIZE - 2;
+					graphics.fillRect(x, y, width, height);
+				}
+			}
+		}
+		graphics.dispose();
+		return image;
 	}
 }
