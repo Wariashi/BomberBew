@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import de.wariashi.bomberbew.model.Map;
+
 @SuppressWarnings("serial")
 public class BomberBew extends JFrame {
 	private JPanel viewport;

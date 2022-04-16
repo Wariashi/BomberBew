@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import de.wariashi.bomberbew.model.Map;
+
 @SuppressWarnings("serial")
 public class Viewport extends JPanel {
 	private static final int TILE_SIZE = 32;
@@ -56,16 +58,25 @@ public class Viewport extends JPanel {
 		var image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 		var graphics = image.createGraphics();
 
-		graphics.setColor(Color.GRAY);
 		for (var tileY = -1; tileY <= map.getHeight(); tileY++) {
 			for (var tileX = -1; tileX <= map.getWidth(); tileX++) {
-				if (map.isWall(tileX, tileY)) {
-					var x = TILE_SIZE + tileX * TILE_SIZE + 1;
-					var y = TILE_SIZE + tileY * TILE_SIZE + 1;
-					var width = TILE_SIZE - 2;
-					var height = TILE_SIZE - 2;
-					graphics.fillRect(x, y, width, height);
+				switch (map.getMaterial(tileX, tileY)) {
+				case BRICK:
+					graphics.setColor(Color.ORANGE);
+					break;
+				case CONCRETE:
+					graphics.setColor(Color.GRAY);
+					break;
+				case EMPTY:
+					graphics.setColor(Color.BLACK);
+					break;
 				}
+
+				var x = TILE_SIZE + tileX * TILE_SIZE + 1;
+				var y = TILE_SIZE + tileY * TILE_SIZE + 1;
+				var width = TILE_SIZE - 2;
+				var height = TILE_SIZE - 2;
+				graphics.fillRect(x, y, width, height);
 			}
 		}
 		graphics.dispose();
