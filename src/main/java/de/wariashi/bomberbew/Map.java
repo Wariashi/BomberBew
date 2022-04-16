@@ -1,16 +1,14 @@
 package de.wariashi.bomberbew;
 
 public class Map {
-	private static final int WIDTH = 15;
-	private static final int HEIGHT = 11;
+	private static final int WIDTH = 13;
+	private static final int HEIGHT = 9;
 	private boolean[][] walls = new boolean[WIDTH][HEIGHT];
 
 	public Map() {
 		for (var y = 0; y < HEIGHT; y++) {
 			for (var x = 0; x < WIDTH; x++) {
-				var border = x == 0 || y == 0 || x == WIDTH - 1 || y == HEIGHT - 1;
-				var pillar = (x % 2 == 0) && (y % 2 == 0);
-				walls[x][y] = border || pillar;
+				walls[x][y] = (x % 2 != 0) && (y % 2 != 0);
 			}
 		}
 	}
@@ -24,6 +22,9 @@ public class Map {
 	}
 
 	public boolean isWall(int x, int y) {
+		if (x < 0 || WIDTH <= x || y < 0 || HEIGHT <= y) {
+			return true;
+		}
 		return walls[x][y];
 	}
 }

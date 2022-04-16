@@ -50,18 +50,18 @@ public class Viewport extends JPanel {
 	}
 
 	private BufferedImage createMap() {
-		var imageWidth = map.getWidth() * TILE_SIZE;
-		var imageHeight = map.getHeight() * TILE_SIZE;
+		var imageWidth = (map.getWidth() + 2) * TILE_SIZE;
+		var imageHeight = (map.getHeight() + 2) * TILE_SIZE;
 
 		var image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 		var graphics = image.createGraphics();
 
 		graphics.setColor(Color.GRAY);
-		for (var tileY = 0; tileY < map.getHeight(); tileY++) {
-			for (var tileX = 0; tileX < map.getWidth(); tileX++) {
+		for (var tileY = -1; tileY <= map.getHeight(); tileY++) {
+			for (var tileX = -1; tileX <= map.getWidth(); tileX++) {
 				if (map.isWall(tileX, tileY)) {
-					var x = tileX * TILE_SIZE + 1;
-					var y = tileY * TILE_SIZE + 1;
+					var x = TILE_SIZE + tileX * TILE_SIZE + 1;
+					var y = TILE_SIZE + tileY * TILE_SIZE + 1;
 					var width = TILE_SIZE - 2;
 					var height = TILE_SIZE - 2;
 					graphics.fillRect(x, y, width, height);
