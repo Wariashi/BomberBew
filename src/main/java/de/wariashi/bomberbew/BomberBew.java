@@ -12,7 +12,7 @@ import de.wariashi.bomberbew.model.Map;
 @SuppressWarnings("serial")
 public class BomberBew extends JFrame {
 	private JPanel viewport;
-	private transient Map map = new Map(13, 9);
+	private transient Map map = new Map(13, 9, 0.75);
 
 	public static void main(String[] args) {
 		new BomberBew();

@@ -5,12 +5,12 @@ public class Map {
 	private int height;
 	private Material[][] materials;
 
-	public Map(int width, int height) {
+	public Map(int width, int height, double brickDensity) {
 		this.width = width;
 		this.height = height;
 
 		initializeMaterials();
-		addBricks();
+		addBricks(brickDensity);
 		addPillars();
 		clearCorners();
 	}
@@ -30,10 +30,10 @@ public class Map {
 		return width;
 	}
 
-	private void addBricks() {
+	private void addBricks(double brickDensity) {
 		for (var y = 0; y < height; y++) {
 			for (var x = 0; x < width; x++) {
-				if (Math.random() < 0.75) {
+				if (Math.random() < brickDensity) {
 					materials[x][y] = Material.BRICK;
 				}
 			}
