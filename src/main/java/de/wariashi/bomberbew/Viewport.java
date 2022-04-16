@@ -3,24 +3,29 @@ package de.wariashi.bomberbew;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import javax.swing.JPanel;
 
 import de.wariashi.bomberbew.model.Map;
+import de.wariashi.bomberbew.model.Player;
 
 @SuppressWarnings("serial")
 public class Viewport extends JPanel {
 	private static final int TILE_SIZE = 32;
 
 	private transient Map map;
+	private transient List<Player> players;
 
-	public Viewport(Map map) {
+	public Viewport(Map map, List<Player> players) {
 		this.map = map;
+		this.players = players;
 	}
 
 	@Override
 	public void paint(Graphics graphics) {
 		var mapImage = createMap();
+		addPlayers(mapImage);
 
 		var mapWidth = mapImage.getWidth();
 		var mapHeight = mapImage.getHeight();
@@ -49,6 +54,19 @@ public class Viewport extends JPanel {
 			var offset = (panelHeight - height) / 2;
 			graphics.drawImage(mapImage, 0, offset, width, offset + height, 0, 0, mapWidth, mapHeight, null);
 		}
+	}
+
+	private void addPlayers(BufferedImage map) {
+		var graphics = map.createGraphics();
+
+		var iterator = players.iterator();
+		while (iterator.hasNext()) {
+			var player = iterator.next();
+			graphics.setColor(player.getColor());
+			graphics.fillOval(TILE_SIZE + player.getTileX() * TILE_SIZE, TILE_SIZE + player.getTileY() * TILE_SIZE,
+					TILE_SIZE, TILE_SIZE);
+		}
+		graphics.dispose();
 	}
 
 	private BufferedImage createMap() {
