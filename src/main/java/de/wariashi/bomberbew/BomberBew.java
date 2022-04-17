@@ -23,14 +23,7 @@ public class BomberBew extends JFrame {
 	}
 
 	public BomberBew() {
-		addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent key) {
-				if (key.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					System.exit(0);
-				}
-			}
-		});
+		addKeyListener();
 
 		setTitle("BomberBEW");
 		setUndecorated(true);
@@ -40,11 +33,35 @@ public class BomberBew extends JFrame {
 		map = new Map(13, 9, 0);
 
 		players = new ArrayList<>();
-		players.add(new Player(0, 0));
+		players.add(new Player(map, 0, 0, new KeyboardController()));
 
 		viewport = new Viewport(map, players);
 		add(viewport);
 
 		setVisible(true);
+	}
+
+	private void addKeyListener() {
+		addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent key) {
+				var iterator = players.iterator();
+				while (iterator.hasNext()) {
+					iterator.next().getController().onKeyPressed(key.getKeyCode());
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent key) {
+				if (key.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					System.exit(0);
+				} else {
+					var iterator = players.iterator();
+					while (iterator.hasNext()) {
+						iterator.next().getController().onKeyReleased(key.getKeyCode());
+					}
+				}
+			}
+		});
 	}
 }
