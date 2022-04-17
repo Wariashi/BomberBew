@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import de.wariashi.bomberbew.model.Game;
 import de.wariashi.bomberbew.model.Map;
 import de.wariashi.bomberbew.model.Player;
 
@@ -35,7 +36,9 @@ public class BomberBew extends JFrame {
 		players = new ArrayList<>();
 		players.add(new Player(map, 0, 0, new KeyboardController()));
 
-		viewport = new Viewport(map, players);
+		var game = new Game(map, players);
+
+		viewport = new Viewport(game);
 		add(viewport);
 
 		setVisible(true);

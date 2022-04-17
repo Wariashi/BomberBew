@@ -3,23 +3,19 @@ package de.wariashi.bomberbew;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 import javax.swing.JPanel;
 
-import de.wariashi.bomberbew.model.Map;
-import de.wariashi.bomberbew.model.Player;
+import de.wariashi.bomberbew.model.Game;
 
 @SuppressWarnings("serial")
 public class Viewport extends JPanel {
 	private static final int TILE_SIZE = 32;
 
-	private transient Map map;
-	private transient List<Player> players;
+	private transient Game game;
 
-	public Viewport(Map map, List<Player> players) {
-		this.map = map;
-		this.players = players;
+	public Viewport(Game game) {
+		this.game = game;
 		startGraphicsThread();
 	}
 
@@ -60,6 +56,7 @@ public class Viewport extends JPanel {
 	private void addPlayers(BufferedImage map) {
 		var graphics = map.createGraphics();
 
+		var players = game.getPlayers();
 		var iterator = players.iterator();
 		while (iterator.hasNext()) {
 			var player = iterator.next();
@@ -71,6 +68,7 @@ public class Viewport extends JPanel {
 	}
 
 	private BufferedImage createMap() {
+		var map = game.getMap();
 		var imageWidth = (map.getWidth() + 2) * TILE_SIZE;
 		var imageHeight = (map.getHeight() + 2) * TILE_SIZE;
 
