@@ -20,6 +20,7 @@ public class Viewport extends JPanel {
 	public Viewport(Map map, List<Player> players) {
 		this.map = map;
 		this.players = players;
+		startGraphicsThread();
 	}
 
 	@Override
@@ -99,5 +100,26 @@ public class Viewport extends JPanel {
 		}
 		graphics.dispose();
 		return image;
+	}
+
+	/**
+	 * Starts a new thread that renders the current view in an endless loop.
+	 */
+	private void startGraphicsThread() {
+		var graphicsThread = new Thread() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						repaint();
+						Thread.sleep(1);
+					} catch (InterruptedException exception) {
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
+		};
+		graphicsThread.setName("Graphics");
+		graphicsThread.start();
 	}
 }

@@ -13,6 +13,24 @@ public class Player {
 		color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
 		this.tileX = tileX;
 		this.tileY = tileY;
+
+		new Thread() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Player.this.tileX++;
+						if (Player.this.tileX > 12) {
+							Player.this.tileX = 0;
+						}
+						Thread.sleep(500);
+					} catch (InterruptedException exception) {
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
+		}.start();
+
 	}
 
 	public Color getColor() {

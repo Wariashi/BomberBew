@@ -37,13 +37,10 @@ public class BomberBew extends JFrame {
 		setLocation(0, 0);
 		setSize(Toolkit.getDefaultToolkit().getScreenSize());
 
-		map = new Map(13, 9, 0.75);
+		map = new Map(13, 9, 0);
 
 		players = new ArrayList<>();
 		players.add(new Player(0, 0));
-		players.add(new Player(map.getWidth() - 1, 0));
-		players.add(new Player(0, map.getHeight() - 1));
-		players.add(new Player(map.getWidth() - 1, map.getHeight() - 1));
 
 		viewport = new Viewport(map, players);
 		add(viewport);
