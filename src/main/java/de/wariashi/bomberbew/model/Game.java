@@ -42,4 +42,15 @@ public class Game {
 	public List<Player> getPlayers() {
 		return players;
 	}
+
+	/**
+	 * Moves every {@link Player} by calling their "step" function.
+	 */
+	public void step() {
+		var iterator = players.iterator();
+		while (iterator.hasNext()) {
+			var player = iterator.next();
+			player.step();
+		}
+	}
 }

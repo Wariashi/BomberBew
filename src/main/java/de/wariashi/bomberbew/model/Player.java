@@ -20,20 +20,6 @@ public class Player {
 
 		var random = new Random();
 		color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
-
-		new Thread() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						move();
-						Thread.sleep(100);
-					} catch (InterruptedException exception) {
-						Thread.currentThread().interrupt();
-					}
-				}
-			}
-		}.start();
 	}
 
 	public Color getColor() {
@@ -52,7 +38,7 @@ public class Player {
 		return tileY;
 	}
 
-	private void move() {
+	public void step() {
 		var direction = controller.getDirection();
 		if (direction == null) {
 			return;

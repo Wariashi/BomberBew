@@ -41,6 +41,10 @@ public class BomberBew extends JFrame {
 		viewport = new Viewport(game);
 		add(viewport);
 
+		Clock.setGame(game);
+		Clock.setTicksPerSecond(20);
+		Clock.start();
+
 		setVisible(true);
 	}
 
