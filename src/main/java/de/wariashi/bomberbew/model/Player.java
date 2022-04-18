@@ -45,55 +45,75 @@ public class Player {
 		}
 		switch (direction) {
 		case NORTH:
-			if (map.getMaterial(tileX, tileY - 1) == Material.EMPTY) {
-				tileY--;
-			}
+			moveUp();
 			break;
 		case NORTH_EAST:
-			if (map.getMaterial(tileX, tileY - 1) == Material.EMPTY) {
-				tileY--;
-			} else if (map.getMaterial(tileX + 1, tileY) == Material.EMPTY) {
-				tileX++;
+			if (!moveUp()) {
+				moveRight();
 			}
 			break;
 		case EAST:
-			if (map.getMaterial(tileX + 1, tileY) == Material.EMPTY) {
-				tileX++;
-			}
+			moveRight();
 			break;
 		case SOUTH_EAST:
-			if (map.getMaterial(tileX + 1, tileY) == Material.EMPTY) {
-				tileX++;
-			} else if (map.getMaterial(tileX, tileY + 1) == Material.EMPTY) {
-				tileY++;
+			if (!moveRight()) {
+				moveDown();
 			}
 			break;
 		case SOUTH:
-			if (map.getMaterial(tileX, tileY + 1) == Material.EMPTY) {
-				tileY++;
-			}
+			moveDown();
 			break;
 		case SOUTH_WEST:
-			if (map.getMaterial(tileX, tileY + 1) == Material.EMPTY) {
-				tileY++;
-			} else if (map.getMaterial(tileX - 1, tileY) == Material.EMPTY) {
-				tileX--;
+			if (!moveDown()) {
+				moveLeft();
 			}
 			break;
 		case WEST:
-			if (map.getMaterial(tileX - 1, tileY) == Material.EMPTY) {
-				tileX--;
-			}
+			moveLeft();
 			break;
 		case NORTH_WEST:
-			if (map.getMaterial(tileX - 1, tileY) == Material.EMPTY) {
-				tileX--;
-			} else if (map.getMaterial(tileX, tileY - 1) == Material.EMPTY) {
-				tileY--;
+			if (!moveLeft()) {
+				moveUp();
 			}
 			break;
 		default:
 			break;
+		}
+	}
+
+	private boolean moveDown() {
+		if (map.getMaterial(tileX, tileY + 1) == Material.EMPTY) {
+			tileY++;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean moveLeft() {
+		if (map.getMaterial(tileX - 1, tileY) == Material.EMPTY) {
+			tileX--;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean moveRight() {
+		if (map.getMaterial(tileX + 1, tileY) == Material.EMPTY) {
+			tileX++;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean moveUp() {
+		if (map.getMaterial(tileX, tileY - 1) == Material.EMPTY) {
+			tileY--;
+			return true;
+		} else {
+			return false;
 		}
 	}
 }
