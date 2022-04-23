@@ -1,4 +1,4 @@
-package de.wariashi.bomberbew;
+package de.wariashi.bomberbew.controller;
 
 import java.awt.event.KeyEvent;
 
@@ -10,35 +10,10 @@ public class KeyboardController {
 	private boolean rightPressed = false;
 	private boolean upPressed = false;
 
-	public Direction getDirection() {
-		var down = downPressed && !upPressed;
-		var left = leftPressed && !rightPressed;
-		var right = rightPressed && !leftPressed;
-		var up = upPressed && !downPressed;
-
-		if (up) {
-			if (left) {
-				return Direction.NORTH_WEST;
-			} else if (right) {
-				return Direction.NORTH_EAST;
-			} else {
-				return Direction.NORTH;
-			}
-		} else if (down) {
-			if (left) {
-				return Direction.SOUTH_WEST;
-			} else if (right) {
-				return Direction.SOUTH_EAST;
-			} else {
-				return Direction.SOUTH;
-			}
-		} else if (left) {
-			return Direction.WEST;
-		} else if (right) {
-			return Direction.EAST;
-		} else {
-			return null;
-		}
+	public ControllerOutput update() {
+		var output = new ControllerOutput();
+		output.setDirection(getDirection());
+		return output;
 	}
 
 	public void onKeyPressed(int keyCode) {
@@ -76,6 +51,37 @@ public class KeyboardController {
 			break;
 		default:
 			break;
+		}
+	}
+
+	private Direction getDirection() {
+		var down = downPressed && !upPressed;
+		var left = leftPressed && !rightPressed;
+		var right = rightPressed && !leftPressed;
+		var up = upPressed && !downPressed;
+
+		if (up) {
+			if (left) {
+				return Direction.NORTH_WEST;
+			} else if (right) {
+				return Direction.NORTH_EAST;
+			} else {
+				return Direction.NORTH;
+			}
+		} else if (down) {
+			if (left) {
+				return Direction.SOUTH_WEST;
+			} else if (right) {
+				return Direction.SOUTH_EAST;
+			} else {
+				return Direction.SOUTH;
+			}
+		} else if (left) {
+			return Direction.WEST;
+		} else if (right) {
+			return Direction.EAST;
+		} else {
+			return null;
 		}
 	}
 }

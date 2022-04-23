@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import de.wariashi.bomberbew.controller.KeyboardController;
 import de.wariashi.bomberbew.model.Game;
 import de.wariashi.bomberbew.model.Map;
 import de.wariashi.bomberbew.model.Player;
@@ -18,6 +19,7 @@ public class BomberBew extends JFrame {
 	private JPanel viewport;
 	private transient Map map;
 	private transient List<Player> players;
+	private transient List<KeyboardController> controllers;
 
 	public static void main(String[] args) {
 		new BomberBew();
@@ -34,9 +36,12 @@ public class BomberBew extends JFrame {
 		map = new Map(13, 9, 0.25);
 
 		players = new ArrayList<>();
-		players.add(new Player(map, 0, 0, new KeyboardController()));
+		players.add(new Player(map, 0, 0));
 
-		var game = new Game(map, players);
+		controllers = new ArrayList<>();
+		controllers.add(new KeyboardController());
+
+		var game = new Game(map, players, controllers);
 
 		viewport = new Viewport(game);
 		add(viewport);
@@ -52,9 +57,9 @@ public class BomberBew extends JFrame {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent key) {
-				var iterator = players.iterator();
+				var iterator = controllers.iterator();
 				while (iterator.hasNext()) {
-					iterator.next().getController().onKeyPressed(key.getKeyCode());
+					iterator.next().onKeyPressed(key.getKeyCode());
 				}
 			}
 
@@ -63,9 +68,9 @@ public class BomberBew extends JFrame {
 				if (key.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					System.exit(0);
 				} else {
-					var iterator = players.iterator();
+					var iterator = controllers.iterator();
 					while (iterator.hasNext()) {
-						iterator.next().getController().onKeyReleased(key.getKeyCode());
+						iterator.next().onKeyReleased(key.getKeyCode());
 					}
 				}
 			}

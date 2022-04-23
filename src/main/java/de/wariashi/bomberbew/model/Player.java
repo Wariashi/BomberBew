@@ -3,7 +3,7 @@ package de.wariashi.bomberbew.model;
 import java.awt.Color;
 import java.util.Random;
 
-import de.wariashi.bomberbew.KeyboardController;
+import de.wariashi.bomberbew.controller.ControllerOutput;
 
 public class Player {
 	private Map map;
@@ -14,14 +14,12 @@ public class Player {
 	private int offsetY;
 	private Direction velocity;
 
-	private KeyboardController controller;
 	private Color color;
 
-	public Player(Map map, int tileX, int tileY, KeyboardController controller) {
+	public Player(Map map, int tileX, int tileY) {
 		this.map = map;
 		this.tileX = tileX;
 		this.tileY = tileY;
-		this.controller = controller;
 
 		var random = new Random();
 		color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
@@ -29,10 +27,6 @@ public class Player {
 
 	public Color getColor() {
 		return color;
-	}
-
-	public KeyboardController getController() {
-		return controller;
 	}
 
 	public int getOffsetX() {
@@ -51,8 +45,8 @@ public class Player {
 		return tileY;
 	}
 
-	public void step() {
-		var direction = controller.getDirection();
+	public void step(ControllerOutput output) {
+		var direction = output.getDirection();
 		if (getOffsetX() != 0 || getOffsetY() != 0) {
 			direction = velocity;
 		}
