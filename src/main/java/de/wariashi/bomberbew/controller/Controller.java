@@ -8,6 +8,14 @@ import de.wariashi.bomberbew.model.Player;
  */
 public interface Controller {
 	/**
+	 * Returns a human readable name of the {@link Controller} which can be used by
+	 * the UI.
+	 * 
+	 * @return a human readable name of the {@link Controller}
+	 */
+	public String getName();
+
+	/**
 	 * This method is called periodically to let the {@link Controller} decide what
 	 * to do next.
 	 * 

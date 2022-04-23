@@ -1,8 +1,12 @@
 package de.wariashi.bomberbew.model;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import de.wariashi.bomberbew.Clock;
 import de.wariashi.bomberbew.controller.Controller;
 import de.wariashi.bomberbew.controller.ControllerInput;
 import de.wariashi.bomberbew.model.projection.MapData;
@@ -81,8 +85,16 @@ public class Game {
 
 			// update
 			var controller = controllers.get(playerIndex);
-			var controllerOutput = controller.update(controllerInput);
-			player.step(controllerOutput);
+			try {
+				var controllerOutput = controller.update(controllerInput);
+				player.step(controllerOutput);
+			} catch (Exception exception) {
+				Clock.stop();
+				var message = exception.getMessage();
+				var title = MessageFormat.format("Foul by {0}!", controller.getName());
+				JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+				exception.printStackTrace();
+			}
 		}
 	}
 }

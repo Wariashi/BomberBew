@@ -13,6 +13,12 @@ public class KeyboardController implements Controller {
 	private boolean rightPressed = false;
 	private boolean upPressed = false;
 
+	@Override
+	public String getName() {
+		return "KeyboardController";
+	}
+
+	@Override
 	public ControllerOutput update(ControllerInput input) {
 		var output = new ControllerOutput();
 		output.setDirection(getDirection());

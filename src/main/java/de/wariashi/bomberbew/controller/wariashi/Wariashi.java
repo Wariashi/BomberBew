@@ -6,6 +6,11 @@ import de.wariashi.bomberbew.controller.ControllerOutput;
 
 public class Wariashi implements Controller {
 	@Override
+	public String getName() {
+		return "Wariashi";
+	}
+
+	@Override
 	public ControllerOutput update(ControllerInput input) {
 		return new ControllerOutput();
 	}
