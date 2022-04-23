@@ -2,7 +2,7 @@ package de.wariashi.bomberbew.model;
 
 import java.util.List;
 
-import de.wariashi.bomberbew.controller.KeyboardController;
+import de.wariashi.bomberbew.controller.Controller;
 
 /**
  * A Game consists of a {@link Map map} and a list of {@link Player players}.
@@ -10,7 +10,7 @@ import de.wariashi.bomberbew.controller.KeyboardController;
 public class Game {
 	private Map map;
 	private List<Player> players;
-	private List<KeyboardController> controllers;
+	private List<Controller> controllers;
 
 	/**
 	 * Creates a new Game.
@@ -21,7 +21,7 @@ public class Game {
 	 *                                  or if the number of players does not match
 	 *                                  the number of controllers
 	 */
-	public Game(Map map, List<Player> players, List<KeyboardController> controllers) {
+	public Game(Map map, List<Player> players, List<Controller> controllers) {
 		if (map == null || players == null || controllers == null || players.size() != controllers.size()) {
 			throw new IllegalArgumentException();
 		}

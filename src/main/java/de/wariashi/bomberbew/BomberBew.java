@@ -9,7 +9,10 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import de.wariashi.bomberbew.controller.KeyboardController;
+import de.wariashi.bomberbew.controller.Controller;
+import de.wariashi.bomberbew.controller.keyboard.KeyboardController;
+import de.wariashi.bomberbew.controller.tempii.Tempii;
+import de.wariashi.bomberbew.controller.wariashi.Wariashi;
 import de.wariashi.bomberbew.model.Game;
 import de.wariashi.bomberbew.model.Map;
 import de.wariashi.bomberbew.model.Player;
@@ -19,7 +22,7 @@ public class BomberBew extends JFrame {
 	private JPanel viewport;
 	private transient Map map;
 	private transient List<Player> players;
-	private transient List<KeyboardController> controllers;
+	private transient List<Controller> controllers;
 
 	public static void main(String[] args) {
 		new BomberBew();
@@ -36,9 +39,18 @@ public class BomberBew extends JFrame {
 		map = new Map(13, 9, 0.25);
 
 		players = new ArrayList<>();
-		players.add(new Player(map, 0, 0));
-
 		controllers = new ArrayList<>();
+
+		// Tempii
+		players.add(new Player(map, 0, 0));
+		controllers.add(new Tempii());
+
+		// Wariashi
+		players.add(new Player(map, map.getWidth() - 1, 0));
+		controllers.add(new Wariashi());
+
+		// Keyboard
+		players.add(new Player(map, 0, map.getHeight() - 1));
 		controllers.add(new KeyboardController());
 
 		var game = new Game(map, players, controllers);
@@ -59,7 +71,10 @@ public class BomberBew extends JFrame {
 			public void keyPressed(KeyEvent key) {
 				var iterator = controllers.iterator();
 				while (iterator.hasNext()) {
-					iterator.next().onKeyPressed(key.getKeyCode());
+					var controller = iterator.next();
+					if (controller instanceof KeyboardController keyboard) {
+						keyboard.onKeyPressed(key.getKeyCode());
+					}
 				}
 			}
 
@@ -70,7 +85,10 @@ public class BomberBew extends JFrame {
 				} else {
 					var iterator = controllers.iterator();
 					while (iterator.hasNext()) {
-						iterator.next().onKeyReleased(key.getKeyCode());
+						var controller = iterator.next();
+						if (controller instanceof KeyboardController keyboard) {
+							keyboard.onKeyReleased(key.getKeyCode());
+						}
 					}
 				}
 			}

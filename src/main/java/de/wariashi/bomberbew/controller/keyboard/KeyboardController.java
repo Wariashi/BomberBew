@@ -1,10 +1,12 @@
-package de.wariashi.bomberbew.controller;
+package de.wariashi.bomberbew.controller.keyboard;
 
 import java.awt.event.KeyEvent;
 
+import de.wariashi.bomberbew.controller.Controller;
+import de.wariashi.bomberbew.controller.ControllerOutput;
 import de.wariashi.bomberbew.model.Direction;
 
-public class KeyboardController {
+public class KeyboardController implements Controller {
 	private boolean downPressed = false;
 	private boolean leftPressed = false;
 	private boolean rightPressed = false;
