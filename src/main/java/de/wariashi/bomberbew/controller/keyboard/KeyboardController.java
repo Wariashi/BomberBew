@@ -3,6 +3,7 @@ package de.wariashi.bomberbew.controller.keyboard;
 import java.awt.event.KeyEvent;
 
 import de.wariashi.bomberbew.controller.Controller;
+import de.wariashi.bomberbew.controller.ControllerInput;
 import de.wariashi.bomberbew.controller.ControllerOutput;
 import de.wariashi.bomberbew.model.Direction;
 
@@ -12,7 +13,7 @@ public class KeyboardController implements Controller {
 	private boolean rightPressed = false;
 	private boolean upPressed = false;
 
-	public ControllerOutput update() {
+	public ControllerOutput update(ControllerInput input) {
 		var output = new ControllerOutput();
 		output.setDirection(getDirection());
 		return output;

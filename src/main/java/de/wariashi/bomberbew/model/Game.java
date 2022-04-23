@@ -3,6 +3,8 @@ package de.wariashi.bomberbew.model;
 import java.util.List;
 
 import de.wariashi.bomberbew.controller.Controller;
+import de.wariashi.bomberbew.controller.ControllerInput;
+import de.wariashi.bomberbew.model.projection.MapData;
 
 /**
  * A Game consists of a {@link Map map} and a list of {@link Player players}.
@@ -52,10 +54,13 @@ public class Game {
 	 * Moves every {@link Player} by calling their "step" function.
 	 */
 	public void step() {
+		var mapData = new MapData(map);
+		var controllerInput = new ControllerInput(mapData);
+
 		for (int i = 0; i < players.size(); i++) {
 			var player = players.get(i);
 			var controller = controllers.get(i);
-			var controllerOutput = controller.update();
+			var controllerOutput = controller.update(controllerInput);
 			player.step(controllerOutput);
 		}
 	}

@@ -1,5 +1,5 @@
 package de.wariashi.bomberbew.controller;
 
 public interface Controller {
-	public ControllerOutput update();
+	public ControllerOutput update(ControllerInput input);
 }
