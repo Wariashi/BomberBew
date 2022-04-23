@@ -1,10 +1,12 @@
 package de.wariashi.bomberbew.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.wariashi.bomberbew.controller.Controller;
 import de.wariashi.bomberbew.controller.ControllerInput;
 import de.wariashi.bomberbew.model.projection.MapData;
+import de.wariashi.bomberbew.model.projection.PlayerData;
 
 /**
  * A Game consists of a {@link Map map} and a list of {@link Player players}.
@@ -54,12 +56,31 @@ public class Game {
 	 * Moves every {@link Player} by calling their "step" function.
 	 */
 	public void step() {
+		// get projections of current state
 		var mapData = new MapData(map);
-		var controllerInput = new ControllerInput(mapData);
-
+		var playerData = new ArrayList<PlayerData>();
 		for (int i = 0; i < players.size(); i++) {
-			var player = players.get(i);
-			var controller = controllers.get(i);
+			playerData.add(new PlayerData(players.get(i)));
+		}
+
+		// update controllers
+		for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
+			// separate the player ...
+			var player = players.get(playerIndex);
+
+			// ... from their enemies
+			var enemyData = new ArrayList<PlayerData>();
+			for (int enemyIndex = 0; enemyIndex < players.size(); enemyIndex++) {
+				if (enemyIndex != playerIndex) {
+					enemyData.add(playerData.get(enemyIndex));
+				}
+			}
+
+			// create controller input
+			var controllerInput = new ControllerInput(mapData, playerData.get(playerIndex), enemyData);
+
+			// update
+			var controller = controllers.get(playerIndex);
 			var controllerOutput = controller.update(controllerInput);
 			player.step(controllerOutput);
 		}
