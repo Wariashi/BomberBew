@@ -61,8 +61,9 @@ public class Viewport extends JPanel {
 		while (iterator.hasNext()) {
 			var player = iterator.next();
 			graphics.setColor(player.getColor());
-			graphics.fillOval(TILE_SIZE + player.getTileX() * TILE_SIZE, TILE_SIZE + player.getTileY() * TILE_SIZE,
-					TILE_SIZE, TILE_SIZE);
+			var playerX = TILE_SIZE + player.getTileX() * TILE_SIZE + player.getOffsetX();
+			var playerY = TILE_SIZE + player.getTileY() * TILE_SIZE + player.getOffsetY();
+			graphics.fillOval(playerX, playerY, TILE_SIZE, TILE_SIZE);
 		}
 		graphics.dispose();
 	}

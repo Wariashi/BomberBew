@@ -31,7 +31,7 @@ public class BomberBew extends JFrame {
 		setLocation(0, 0);
 		setSize(Toolkit.getDefaultToolkit().getScreenSize());
 
-		map = new Map(13, 9, 0);
+		map = new Map(13, 9, 0.25);
 
 		players = new ArrayList<>();
 		players.add(new Player(map, 0, 0, new KeyboardController()));
@@ -42,7 +42,7 @@ public class BomberBew extends JFrame {
 		add(viewport);
 
 		Clock.setGame(game);
-		Clock.setTicksPerSecond(20);
+		Clock.setTicksPerSecond(200);
 		Clock.start();
 
 		setVisible(true);
