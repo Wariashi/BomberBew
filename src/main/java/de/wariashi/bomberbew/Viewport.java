@@ -56,14 +56,23 @@ public class Viewport extends JPanel {
 	private void addPlayers(BufferedImage map) {
 		var graphics = map.createGraphics();
 
+		var mapOffsetX = (int) (1.5 * TILE_SIZE);
+		var mapOffsetY = (int) (1.5 * TILE_SIZE);
+
+		var imageOffsetX = -(TILE_SIZE / 2);
+		var imageOffsetY = -(TILE_SIZE / 2);
+
 		var players = game.getPlayers();
 		var iterator = players.iterator();
 		while (iterator.hasNext()) {
 			var player = iterator.next();
+
 			graphics.setColor(player.getColor());
-			var playerX = TILE_SIZE + player.getTileX() * TILE_SIZE + player.getOffsetX();
-			var playerY = TILE_SIZE + player.getTileY() * TILE_SIZE + player.getOffsetY();
-			graphics.fillOval(playerX, playerY, TILE_SIZE, TILE_SIZE);
+
+			var playerX = mapOffsetX + player.getTileX() * TILE_SIZE + player.getOffsetX();
+			var playerY = mapOffsetY + player.getTileY() * TILE_SIZE + player.getOffsetY();
+
+			graphics.fillOval(imageOffsetX + playerX, imageOffsetY + playerY, TILE_SIZE, TILE_SIZE);
 		}
 		graphics.dispose();
 	}
