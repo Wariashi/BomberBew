@@ -43,7 +43,7 @@ public class BomberBew extends JFrame {
 		map = new Map(13, 9, 0.75);
 		game = new Game(map, players, controllers);
 		Clock.setGame(game);
-		Clock.setTicksPerSecond(200);
+		Clock.setTicksPerSecond(100);
 		setupUi();
 	}
 

@@ -30,7 +30,7 @@ public class Clock {
 							lastStep = lastStep + delay;
 						}
 
-						Thread.sleep(10);
+						Thread.sleep(1);
 					} catch (InterruptedException exception) {
 						Thread.currentThread().interrupt();
 					}
