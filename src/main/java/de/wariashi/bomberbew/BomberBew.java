@@ -1,11 +1,14 @@
 package de.wariashi.bomberbew;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -19,23 +22,21 @@ import de.wariashi.bomberbew.model.Player;
 
 @SuppressWarnings("serial")
 public class BomberBew extends JFrame {
-	private JPanel viewport;
+	// model
+	private transient Game game;
 	private transient Map map;
 	private transient List<Player> players;
 	private transient List<Controller> controllers;
+
+	// ui
+	private JButton start;
+	private JButton stop;
 
 	public static void main(String[] args) {
 		new BomberBew();
 	}
 
 	public BomberBew() {
-		addKeyListener();
-
-		setTitle("BomberBEW");
-		setUndecorated(true);
-		setLocation(0, 0);
-		setSize(Toolkit.getDefaultToolkit().getScreenSize());
-
 		map = new Map(13, 9, 0.25);
 
 		players = new ArrayList<>();
@@ -53,19 +54,14 @@ public class BomberBew extends JFrame {
 		players.add(new Player(map, 0, map.getHeight() - 1));
 		controllers.add(new KeyboardController());
 
-		var game = new Game(map, players, controllers);
-
-		viewport = new Viewport(game);
-		add(viewport);
-
+		game = new Game(map, players, controllers);
 		Clock.setGame(game);
 		Clock.setTicksPerSecond(200);
-		Clock.start();
 
-		setVisible(true);
+		setupUi();
 	}
 
-	private void addKeyListener() {
+	private void addListeners() {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent key) {
@@ -93,5 +89,48 @@ public class BomberBew extends JFrame {
 				}
 			}
 		});
+
+		start.addActionListener(event -> {
+			start.setEnabled(false);
+			Clock.start();
+			stop.setEnabled(true);
+		});
+
+		stop.addActionListener(event -> {
+			stop.setEnabled(false);
+			Clock.stop();
+			start.setEnabled(true);
+		});
+	}
+
+	private void setupUi() {
+		setTitle("BomberBEW");
+		setUndecorated(true);
+		setLocation(0, 0);
+		setSize(Toolkit.getDefaultToolkit().getScreenSize());
+
+		setLayout(new BorderLayout());
+
+		// toolbar
+		var toolbar = new JPanel();
+		toolbar.setBackground(Color.BLACK);
+		add(toolbar, BorderLayout.NORTH);
+
+		// start button
+		start = new JButton("Start");
+		start.setFocusable(false);
+		toolbar.add(start);
+
+		// stop button
+		stop = new JButton("Stop");
+		stop.setEnabled(false);
+		stop.setFocusable(false);
+		toolbar.add(stop);
+
+		// viewport
+		add(new Viewport(game), BorderLayout.CENTER);
+
+		addListeners();
+		setVisible(true);
 	}
 }
