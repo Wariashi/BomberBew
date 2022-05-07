@@ -33,6 +33,7 @@ public class Viewport extends JPanel {
 		var panelRatio = (float) panelWidth / (float) panelHeight;
 
 		// background
+		graphics.setColor(Color.BLACK);
 		graphics.fillRect(0, 0, panelWidth, panelHeight);
 
 		// map

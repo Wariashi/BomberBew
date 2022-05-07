@@ -105,4 +105,12 @@ public class Game {
 			}
 		}
 	}
+
+	public void updateControllers(Player[] players, Controller[] controllers) {
+		if (players == null || controllers == null || players.length != controllers.length) {
+			throw new IllegalArgumentException();
+		}
+		this.players = players;
+		this.controllers = controllers;
+	}
 }

@@ -15,7 +15,7 @@ public class KeyboardController implements Controller {
 
 	@Override
 	public String getName() {
-		return "KeyboardController";
+		return "Keyboard";
 	}
 
 	@Override
