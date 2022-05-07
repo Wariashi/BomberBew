@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,8 +23,8 @@ public class BomberBew extends JFrame {
 	// model
 	private transient Game game;
 	private transient Map map;
-	private transient List<Player> players;
-	private transient List<Controller> controllers;
+	private transient Player[] players = new Player[4];
+	private transient Controller[] controllers = new Controller[4];
 
 	// ui
 	private JButton start;
@@ -39,20 +37,17 @@ public class BomberBew extends JFrame {
 	public BomberBew() {
 		map = new Map(13, 9, 0.25);
 
-		players = new ArrayList<>();
-		controllers = new ArrayList<>();
-
 		// Tempii
-		players.add(new Player(map, 0, 0));
-		controllers.add(new Tempii());
+		players[0] = new Player(map, 0, 0);
+		controllers[0] = new Tempii();
 
 		// Wariashi
-		players.add(new Player(map, map.getWidth() - 1, 0));
-		controllers.add(new Wariashi());
+		players[1] = new Player(map, map.getWidth() - 1, 0);
+		controllers[1] = new Wariashi();
 
 		// Keyboard
-		players.add(new Player(map, 0, map.getHeight() - 1));
-		controllers.add(new KeyboardController());
+		players[2] = new Player(map, 0, map.getHeight() - 1);
+		controllers[2] = new KeyboardController();
 
 		game = new Game(map, players, controllers);
 		Clock.setGame(game);
@@ -65,9 +60,7 @@ public class BomberBew extends JFrame {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent key) {
-				var iterator = controllers.iterator();
-				while (iterator.hasNext()) {
-					var controller = iterator.next();
+				for (var controller : controllers) {
 					if (controller instanceof KeyboardController keyboard) {
 						keyboard.onKeyPressed(key.getKeyCode());
 					}
@@ -79,9 +72,7 @@ public class BomberBew extends JFrame {
 				if (key.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					System.exit(0);
 				} else {
-					var iterator = controllers.iterator();
-					while (iterator.hasNext()) {
-						var controller = iterator.next();
+					for (var controller : controllers) {
 						if (controller instanceof KeyboardController keyboard) {
 							keyboard.onKeyReleased(key.getKeyCode());
 						}

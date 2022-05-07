@@ -63,9 +63,10 @@ public class Viewport extends JPanel {
 		var imageOffsetY = -(TILE_SIZE / 2);
 
 		var players = game.getPlayers();
-		var iterator = players.iterator();
-		while (iterator.hasNext()) {
-			var player = iterator.next();
+		for (var player : players) {
+			if (player == null) {
+				continue;
+			}
 
 			graphics.setColor(player.getColor());
 
