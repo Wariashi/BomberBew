@@ -23,5 +23,10 @@ public enum Material {
 	/**
 	 * An empty tile that is passable by a {@link Player}.
 	 */
-	EMPTY;
+	EMPTY,
+
+	/**
+	 * A tile that kills a {@link Player} standing on it.
+	 */
+	EXPLOSION;
 }

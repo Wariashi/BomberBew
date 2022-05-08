@@ -11,6 +11,7 @@ public class Map {
 	private int height;
 	private Material[][] materials;
 	private int[][] bombTimers;
+	private int[][] explosionTimers;
 
 	/**
 	 * Creates a new {@link Map}.
@@ -27,6 +28,9 @@ public class Map {
 		this.height = height;
 
 		bombTimers = new int[width][height];
+		explosionTimers = new int[width][height];
+
+		// initialize map
 		initializeMaterials();
 		addBricks(brickDensity);
 		addPillars();
@@ -110,13 +114,20 @@ public class Map {
 	}
 
 	/**
-	 * Updates all {@ink Material#BOMB bomb} timers.
+	 * Updates all {@ink Material#BOMB bomb} and {@ink Material#EXPLOSION explosion}
+	 * timers.
 	 */
 	public void step() {
 		for (var y = 0; y < height; y++) {
 			for (var x = 0; x < width; x++) {
-				if (bombTimers[x][y] == 1) {
+				if (explosionTimers[x][y] == 1) {
 					materials[x][y] = Material.EMPTY;
+				}
+				if (explosionTimers[x][y] > 0) {
+					explosionTimers[x][y]--;
+				}
+				if (bombTimers[x][y] == 1) {
+					detonate(x, y);
 				}
 				if (bombTimers[x][y] > 0) {
 					bombTimers[x][y]--;
@@ -179,6 +190,141 @@ public class Map {
 		materials[width - 1][height - 2] = Material.EMPTY;
 		materials[width - 2][height - 1] = Material.EMPTY;
 		materials[width - 1][height - 1] = Material.EMPTY;
+	}
+
+	/**
+	 * Replaces a {@link Material#BOMB bomb} and the adjacent tiles with an
+	 * {@link Material#EXPLOSION explosion}. If another {@link Material#BOMB bomb}
+	 * is hit by the {@link Material#EXPLOSION explosion}, it explodes as well.
+	 * 
+	 * @param x the x coordinate of the detonation
+	 * @param y the y coordinate of the detonation
+	 */
+	private void detonate(int x, int y) {
+		bombTimers[x][y] = 0;
+		materials[x][y] = Material.EXPLOSION;
+		explosionTimers[x][y] = 20;
+
+		detonateEast(x, y);
+		detonateNorth(x, y);
+		detonateSouth(x, y);
+		detonateWest(x, y);
+	}
+
+	/**
+	 * Replaces a {@link Material#BOMB bomb} and the adjacent tiles to the
+	 * {@link Direction#EAST east} with an {@link Material#EXPLOSION explosion}. If
+	 * another {@link Material#BOMB bomb} is hit by the {@link Material#EXPLOSION
+	 * explosion}, it explodes as well.
+	 * 
+	 * @param x the x coordinate of the detonation
+	 * @param y the y coordinate of the detonation
+	 */
+	private void detonateEast(int x, int y) {
+		for (var i = 0; i <= 2; i++) {
+			var material = getMaterial(x + i, y);
+			boolean stop = false;
+			if (material == Material.BRICK || material == Material.CONCRETE) {
+				stop = true;
+			}
+			if (material == Material.BOMB) {
+				detonate(x + i, y);
+			}
+			if (material != Material.CONCRETE) {
+				materials[x + i][y] = Material.EXPLOSION;
+				explosionTimers[x + i][y] = 20;
+			}
+			if (stop) {
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Replaces a {@link Material#BOMB bomb} and the adjacent tiles to the
+	 * {@link Direction#NORTH north} with an {@link Material#EXPLOSION explosion}.
+	 * If another {@link Material#BOMB bomb} is hit by the {@link Material#EXPLOSION
+	 * explosion}, it explodes as well.
+	 * 
+	 * @param x the x coordinate of the detonation
+	 * @param y the y coordinate of the detonation
+	 */
+	private void detonateNorth(int x, int y) {
+		for (var i = 0; i <= 2; i++) {
+			var material = getMaterial(x, y - i);
+			boolean stop = false;
+			if (material == Material.BRICK || material == Material.CONCRETE) {
+				stop = true;
+			}
+			if (material == Material.BOMB) {
+				detonate(x, y - i);
+			}
+			if (material != Material.CONCRETE) {
+				materials[x][y - i] = Material.EXPLOSION;
+				explosionTimers[x][y - i] = 20;
+			}
+			if (stop) {
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Replaces a {@link Material#BOMB bomb} and the adjacent tiles to the
+	 * {@link Direction#SOUTH south} with an {@link Material#EXPLOSION explosion}.
+	 * If another {@link Material#BOMB bomb} is hit by the {@link Material#EXPLOSION
+	 * explosion}, it explodes as well.
+	 * 
+	 * @param x the x coordinate of the detonation
+	 * @param y the y coordinate of the detonation
+	 */
+	private void detonateSouth(int x, int y) {
+		for (var i = 0; i <= 2; i++) {
+			var material = getMaterial(x, y + i);
+			boolean stop = false;
+			if (material == Material.BRICK || material == Material.CONCRETE) {
+				stop = true;
+			}
+			if (material == Material.BOMB) {
+				detonate(x, y + i);
+			}
+			if (material != Material.CONCRETE) {
+				materials[x][y + i] = Material.EXPLOSION;
+				explosionTimers[x][y + i] = 20;
+			}
+			if (stop) {
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Replaces a {@link Material#BOMB bomb} and the adjacent tiles to the
+	 * {@link Direction#WEST west} with an {@link Material#EXPLOSION explosion}. If
+	 * another {@link Material#BOMB bomb} is hit by the {@link Material#EXPLOSION
+	 * explosion}, it explodes as well.
+	 * 
+	 * @param x the x coordinate of the detonation
+	 * @param y the y coordinate of the detonation
+	 */
+	private void detonateWest(int x, int y) {
+		for (var i = 0; i <= 2; i++) {
+			var material = getMaterial(x - i, y);
+			boolean stop = false;
+			if (material == Material.BRICK || material == Material.CONCRETE) {
+				stop = true;
+			}
+			if (material == Material.BOMB) {
+				detonate(x - i, y);
+			}
+			if (material != Material.CONCRETE) {
+				materials[x - i][y] = Material.EXPLOSION;
+				explosionTimers[x - i][y] = 20;
+			}
+			if (stop) {
+				break;
+			}
+		}
 	}
 
 	/**

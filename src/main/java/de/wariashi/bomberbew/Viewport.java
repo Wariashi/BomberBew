@@ -102,6 +102,9 @@ public class Viewport extends JPanel {
 				case EMPTY:
 					graphics.setColor(Color.BLACK);
 					break;
+				case EXPLOSION:
+					graphics.setColor(Color.RED);
+					break;
 				}
 
 				var x = TILE_SIZE + tileX * TILE_SIZE + 1;
