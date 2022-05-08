@@ -1,5 +1,7 @@
 package de.wariashi.bomberbew.model;
 
+import de.wariashi.bomberbew.Clock;
+
 /**
  * The map is a two-dimensional array of tiles which consist of different
  * {@link Material materials}.
@@ -8,6 +10,7 @@ public class Map {
 	private int width;
 	private int height;
 	private Material[][] materials;
+	private int[][] bombTimers;
 
 	/**
 	 * Creates a new {@link Map}.
@@ -23,10 +26,42 @@ public class Map {
 		this.width = width;
 		this.height = height;
 
+		bombTimers = new int[width][height];
 		initializeMaterials();
 		addBricks(brickDensity);
 		addPillars();
 		clearCorners();
+	}
+
+	/**
+	 * Drops a {@ink Material#BOMB bomb} at the given location. If the given
+	 * coordinates are outside of the map, this method will fail silently.
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 */
+	public void dropBomb(int x, int y) {
+		if (x < 0 || width <= x || y < 0 || height <= y) {
+			return;
+		}
+		materials[x][y] = Material.BOMB;
+		bombTimers[x][y] = getIgnitionDuration();
+	}
+
+	/**
+	 * Returns the number of ticks a {@ink Material#BOMB bomb} has remaining before
+	 * exploding at the given location. A value of 0 indicates that there is no
+	 * {@ink Material#BOMB bomb} at all. If the given coordinates are outside of the
+	 * map, this method will fail silently.
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 */
+	public int getBombTimer(int x, int y) {
+		if (x < 0 || width <= x || y < 0 || height <= y) {
+			return 0;
+		}
+		return bombTimers[x][y];
 	}
 
 	/**
@@ -36,6 +71,17 @@ public class Map {
 	 */
 	public int getHeight() {
 		return height;
+	}
+
+	/**
+	 * Returns the number of ticks that a {@ink Material#BOMB bomb} will stay in its
+	 * place before exploding.
+	 * 
+	 * @return the number of ticks that a {@ink Material#BOMB bomb} will stay in its
+	 *         place before exploding
+	 */
+	public int getIgnitionDuration() {
+		return Clock.getTicksPerSecond() * 3;
 	}
 
 	/**
@@ -61,6 +107,22 @@ public class Map {
 	 */
 	public int getWidth() {
 		return width;
+	}
+
+	/**
+	 * Updates all {@ink Material#BOMB bomb} timers.
+	 */
+	public void step() {
+		for (var y = 0; y < height; y++) {
+			for (var x = 0; x < width; x++) {
+				if (bombTimers[x][y] == 1) {
+					materials[x][y] = Material.EMPTY;
+				}
+				if (bombTimers[x][y] > 0) {
+					bombTimers[x][y]--;
+				}
+			}
+		}
 	}
 
 	/**

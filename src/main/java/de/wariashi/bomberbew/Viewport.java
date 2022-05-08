@@ -74,7 +74,7 @@ public class Viewport extends JPanel {
 			var playerX = mapOffsetX + player.getTileX() * TILE_SIZE + player.getOffsetX();
 			var playerY = mapOffsetY + player.getTileY() * TILE_SIZE + player.getOffsetY();
 
-			graphics.fillOval(imageOffsetX + playerX, imageOffsetY + playerY, TILE_SIZE, TILE_SIZE);
+			graphics.fillOval(imageOffsetX + playerX + 2, imageOffsetY + playerY + 2, TILE_SIZE - 4, TILE_SIZE - 4);
 		}
 		graphics.dispose();
 	}
@@ -90,6 +90,9 @@ public class Viewport extends JPanel {
 		for (var tileY = -1; tileY <= map.getHeight(); tileY++) {
 			for (var tileX = -1; tileX <= map.getWidth(); tileX++) {
 				switch (map.getMaterial(tileX, tileY)) {
+				case BOMB:
+					graphics.setColor(Color.BLACK);
+					break;
 				case BRICK:
 					graphics.setColor(Color.ORANGE);
 					break;
@@ -106,6 +109,14 @@ public class Viewport extends JPanel {
 				var width = TILE_SIZE - 2;
 				var height = TILE_SIZE - 2;
 				graphics.fillRect(x, y, width, height);
+
+				if (map.getBombTimer(tileX, tileY) > 0) {
+					var percentage = 1 - (map.getBombTimer(tileX, tileY) / (double) map.getIgnitionDuration());
+					var color = new Color(128 + (int) (127 * percentage), 128 - (int) (127 * percentage),
+							128 - (int) (127 * percentage));
+					graphics.setColor(color);
+					graphics.fillOval(x, y, width, height);
+				}
 			}
 		}
 		graphics.dispose();

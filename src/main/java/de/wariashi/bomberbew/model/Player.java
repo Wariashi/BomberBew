@@ -50,6 +50,15 @@ public class Player {
 		if (getOffsetX() != 0 || getOffsetY() != 0) {
 			direction = velocity;
 		}
+		move(direction);
+
+		var dropBomb = output.getDropBomb();
+		if (dropBomb) {
+			map.dropBomb(tileX, tileY);
+		}
+	}
+
+	private void move(Direction direction) {
 		if (direction == null) {
 			return;
 		}

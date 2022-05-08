@@ -8,10 +8,14 @@ import de.wariashi.bomberbew.controller.ControllerOutput;
 import de.wariashi.bomberbew.model.Direction;
 
 public class KeyboardController implements Controller {
+	// movement
 	private boolean downPressed = false;
 	private boolean leftPressed = false;
 	private boolean rightPressed = false;
 	private boolean upPressed = false;
+
+	// bombs
+	private boolean spacePressed = false;
 
 	@Override
 	public String getName() {
@@ -22,6 +26,7 @@ public class KeyboardController implements Controller {
 	public ControllerOutput update(ControllerInput input) {
 		var output = new ControllerOutput();
 		output.setDirection(getDirection());
+		output.setDropBomb(spacePressed);
 		return output;
 	}
 
@@ -35,6 +40,9 @@ public class KeyboardController implements Controller {
 			break;
 		case KeyEvent.VK_RIGHT:
 			rightPressed = true;
+			break;
+		case KeyEvent.VK_SPACE:
+			spacePressed = true;
 			break;
 		case KeyEvent.VK_UP:
 			upPressed = true;
@@ -54,6 +62,9 @@ public class KeyboardController implements Controller {
 			break;
 		case KeyEvent.VK_RIGHT:
 			rightPressed = false;
+			break;
+		case KeyEvent.VK_SPACE:
+			spacePressed = false;
 			break;
 		case KeyEvent.VK_UP:
 			upPressed = false;

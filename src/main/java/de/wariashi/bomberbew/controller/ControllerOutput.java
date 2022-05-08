@@ -2,6 +2,7 @@ package de.wariashi.bomberbew.controller;
 
 import de.wariashi.bomberbew.model.Direction;
 import de.wariashi.bomberbew.model.Game;
+import de.wariashi.bomberbew.model.Material;
 import de.wariashi.bomberbew.model.Player;
 
 /**
@@ -10,6 +11,7 @@ import de.wariashi.bomberbew.model.Player;
  */
 public class ControllerOutput {
 	private Direction direction = null;
+	private boolean dropBomb = false;
 
 	/**
 	 * Returns the {@link Direction} where the {@link Player} should go next. This
@@ -23,6 +25,17 @@ public class ControllerOutput {
 	}
 
 	/**
+	 * Returns whether the {@link Controller} wants the {@link Player} to drop a
+	 * {@link Material#BOMB bomb} at their current location.
+	 * 
+	 * @param dropBomb <code>true</code> if the {@link Player} is supposed to drop a
+	 *                 {@link Material#BOMB bomb}, <code>false</code> otherwise
+	 */
+	public boolean getDropBomb() {
+		return dropBomb;
+	}
+
+	/**
 	 * Sets the {@link Direction} where the {@link Player} should go next. This can
 	 * also be <code>null</code> to indicate that the {@link Player} should not move
 	 * at all.
@@ -32,5 +45,16 @@ public class ControllerOutput {
 	 */
 	public void setDirection(Direction direction) {
 		this.direction = direction;
+	}
+
+	/**
+	 * Sets whether the {@link Controller} wants the {@link Player} to drop a
+	 * {@link Material#BOMB bomb} at their current location.
+	 * 
+	 * @param dropBomb <code>true</code> if the {@link Player} is supposed to drop a
+	 *                 {@link Material#BOMB bomb}, <code>false</code> otherwise
+	 */
+	public void setDropBomb(boolean dropBomb) {
+		this.dropBomb = dropBomb;
 	}
 }

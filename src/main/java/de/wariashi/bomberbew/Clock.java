@@ -9,6 +9,8 @@ public class Clock {
 	private static boolean paused = true;
 	private static Game game;
 
+	private static int ticksPerSecond;
+
 	private static long delay;
 	private static long lastStep = System.nanoTime();
 	private static long currentTime = System.nanoTime();
@@ -46,6 +48,15 @@ public class Clock {
 	}
 
 	/**
+	 * Returns the tick speed.
+	 * 
+	 * @return the number of ticks per second
+	 */
+	public static int getTicksPerSecond() {
+		return ticksPerSecond;
+	}
+
+	/**
 	 * Sets the game whose step function should be called periodically.
 	 * 
 	 * @param game the game whose step function should be called periodically
@@ -60,6 +71,7 @@ public class Clock {
 	 * @param ticks the number of ticks per second
 	 */
 	public static void setTicksPerSecond(int ticks) {
+		Clock.ticksPerSecond = ticks;
 		if (ticks == 0) {
 			delay = Long.MAX_VALUE;
 			return;

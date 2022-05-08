@@ -61,6 +61,8 @@ public class Game {
 	 * Moves every {@link Player} by calling their "step" function.
 	 */
 	public void step() {
+		map.step();
+
 		// get projections of current state
 		var mapData = new MapData(map);
 		var playerData = new PlayerData[4];
