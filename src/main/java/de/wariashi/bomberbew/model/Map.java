@@ -53,10 +53,10 @@ public class Map {
 	}
 
 	/**
-	 * Returns the number of ticks a {@ink Material#BOMB bomb} has remaining before
+	 * Returns the number of ticks a {@link Material#BOMB bomb} has remaining before
 	 * exploding at the given location. A value of 0 indicates that there is no
-	 * {@ink Material#BOMB bomb} at all. If the given coordinates are outside of the
-	 * map, this method will fail silently.
+	 * {@link Material#BOMB bomb} at all. If the given coordinates are outside of
+	 * the map, this method will fail silently.
 	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
@@ -66,6 +66,22 @@ public class Map {
 			return 0;
 		}
 		return bombTimers[x][y];
+	}
+
+	/**
+	 * Returns the number of ticks an {@link Material#EXPLOSION explosion} has
+	 * remaining before it is removed from the {@link Map map}. A value of 0
+	 * indicates that there is no {@link Material#EXPLOSION explosion} at all. If
+	 * the given coordinates are outside of the map, this method will fail silently.
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 */
+	public int getExplosionTimer(int x, int y) {
+		if (x < 0 || width <= x || y < 0 || height <= y) {
+			return 0;
+		}
+		return explosionTimers[x][y];
 	}
 
 	/**
