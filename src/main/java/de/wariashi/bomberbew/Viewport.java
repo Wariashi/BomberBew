@@ -113,8 +113,10 @@ public class Viewport extends JPanel {
 				var height = TILE_SIZE - 2;
 				graphics.fillRect(x, y, width, height);
 
-				if (map.getBombTimer(tileX, tileY) > 0) {
-					var percentage = 1 - (map.getBombTimer(tileX, tileY) / (double) map.getIgnitionDuration());
+				var bomb = map.getBomb(tileX, tileY);
+				if (bomb != null) {
+					var bombTimer = bomb.getTimer();
+					var percentage = 1 - (bombTimer / (double) map.getIgnitionDuration());
 					var color = new Color(128 + (int) (127 * percentage), 128 - (int) (127 * percentage),
 							128 - (int) (127 * percentage));
 					graphics.setColor(color);

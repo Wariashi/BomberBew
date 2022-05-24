@@ -10,7 +10,7 @@ public class Map {
 	private int width;
 	private int height;
 	private Material[][] materials;
-	private int[][] bombTimers;
+	private Bomb[][] bombs;
 	private int[][] explosionTimers;
 
 	/**
@@ -27,7 +27,7 @@ public class Map {
 		this.width = width;
 		this.height = height;
 
-		bombTimers = new int[width][height];
+		bombs = new Bomb[width][height];
 		explosionTimers = new int[width][height];
 
 		// initialize map
@@ -38,8 +38,8 @@ public class Map {
 	}
 
 	/**
-	 * Drops a {@ink Material#BOMB bomb} at the given location. If the given
-	 * coordinates are outside of the map, this method will fail silently.
+	 * Drops a {@link Bomb} at the given location. If the given coordinates are
+	 * outside of the map, this method will fail silently.
 	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
@@ -49,23 +49,43 @@ public class Map {
 			return;
 		}
 		materials[x][y] = Material.BOMB;
-		bombTimers[x][y] = getIgnitionDuration();
+		bombs[x][y] = new Bomb(getIgnitionDuration());
 	}
 
 	/**
-	 * Returns the number of ticks a {@link Material#BOMB bomb} has remaining before
-	 * exploding at the given location. A value of 0 indicates that there is no
-	 * {@link Material#BOMB bomb} at all. If the given coordinates are outside of
-	 * the map, this method will fail silently.
+	 * Returns the {@link Bomb} at the given location. If the given coordinates are
+	 * outside of the map, this method will fail silently.
 	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
+	 * 
+	 * @return the {@link Bomb} at the given coordinates or <code>null</code> if
+	 *         there is no bomb
 	 */
-	public int getBombTimer(int x, int y) {
+	public Bomb getBomb(int x, int y) {
 		if (x < 0 || width <= x || y < 0 || height <= y) {
+			return null;
+		}
+		return bombs[x][y];
+	}
+
+	/**
+	 * Returns the number of ticks a {@link Bomb} has remaining before exploding at
+	 * the given location. A value of 0 indicates that there is no
+	 * {@link Material#BOMB bomb} at all. If the given coordinates are outside of
+	 * the map, this method will fail silently.
+	 * 
+	 * @deprecated use {@link #getBomb(int, int)}
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 */
+	@Deprecated(forRemoval = true)
+	public int getBombTimer(int x, int y) {
+		var bomb = getBomb(x, y);
+		if (bomb == null) {
 			return 0;
 		}
-		return bombTimers[x][y];
+		return bomb.getTimer();
 	}
 
 	/**
@@ -142,11 +162,15 @@ public class Map {
 				if (explosionTimers[x][y] > 0) {
 					explosionTimers[x][y]--;
 				}
-				if (bombTimers[x][y] == 1) {
-					detonate(x, y);
-				}
-				if (bombTimers[x][y] > 0) {
-					bombTimers[x][y]--;
+				var bomb = getBomb(x, y);
+				if (bomb != null) {
+					var timer = bomb.getTimer();
+					if (timer == 1) {
+						detonate(x, y);
+					}
+					if (timer > 0) {
+						bomb.step();
+					}
 				}
 			}
 		}
@@ -209,15 +233,15 @@ public class Map {
 	}
 
 	/**
-	 * Replaces a {@link Material#BOMB bomb} and the adjacent tiles with an
-	 * {@link Material#EXPLOSION explosion}. If another {@link Material#BOMB bomb}
-	 * is hit by the {@link Material#EXPLOSION explosion}, it explodes as well.
+	 * Replaces a {@link Bomb} and the adjacent tiles with an
+	 * {@link Material#EXPLOSION explosion}. If another {@link Bomb} is hit by the
+	 * {@link Material#EXPLOSION explosion}, it explodes as well.
 	 * 
 	 * @param x the x coordinate of the detonation
 	 * @param y the y coordinate of the detonation
 	 */
 	private void detonate(int x, int y) {
-		bombTimers[x][y] = 0;
+		bombs[x][y] = null;
 		materials[x][y] = Material.EXPLOSION;
 		explosionTimers[x][y] = 20;
 

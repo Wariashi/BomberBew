@@ -1,6 +1,7 @@
 package de.wariashi.bomberbew.model.projection;
 
 import de.wariashi.bomberbew.controller.Controller;
+import de.wariashi.bomberbew.model.Bomb;
 import de.wariashi.bomberbew.model.Map;
 import de.wariashi.bomberbew.model.Material;
 
@@ -13,7 +14,7 @@ public class MapData {
 	private final int width;
 	private final int height;
 	private final Material[][] materials;
-	private final int[][] bombTimers;
+	private final BombData[][] bombs;
 	private final int[][] explosionTimers;
 
 	/**
@@ -29,16 +30,37 @@ public class MapData {
 		width = map.getWidth();
 		height = map.getHeight();
 		materials = new Material[width][height];
-		bombTimers = new int[width][height];
+		bombs = new BombData[width][height];
 		explosionTimers = new int[width][height];
 
 		for (var y = 0; y < height; y++) {
 			for (var x = 0; x < width; x++) {
 				materials[x][y] = map.getMaterial(x, y);
-				bombTimers[x][y] = map.getBombTimer(x, y);
+				var bomb = map.getBomb(x, y);
+				if (bomb != null) {
+					bombs[x][y] = new BombData(map.getBomb(x, y));
+				}
 				explosionTimers[x][y] = map.getExplosionTimer(x, y);
 			}
 		}
+	}
+
+	/**
+	 * Returns {@link BombData data} about the {@link Bomb} at the given location.
+	 * If the given coordinates are outside of the map, this method will fail
+	 * silently.
+	 * 
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * 
+	 * @return the {@link BombData bomb} at the given coordinates or
+	 *         <code>null</code> if there is no bomb
+	 */
+	public BombData getBomb(int x, int y) {
+		if (x < 0 || width <= x || y < 0 || height <= y) {
+			return null;
+		}
+		return bombs[x][y];
 	}
 
 	/**
@@ -47,14 +69,17 @@ public class MapData {
 	 * {@link Material#BOMB bomb} at all. If the given coordinates are outside of
 	 * the map, this method will fail silently.
 	 * 
+	 * @deprecated use {@link #getBomb(int, int)}
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 */
+	@Deprecated(forRemoval = true)
 	public int getBombTimer(int x, int y) {
-		if (x < 0 || width <= x || y < 0 || height <= y) {
+		var bomb = getBomb(x, y);
+		if (bomb == null) {
 			return 0;
 		}
-		return bombTimers[x][y];
+		return bomb.getTimer();
 	}
 
 	/**
