@@ -89,29 +89,26 @@ public class Viewport extends JPanel {
 
 		for (var tileY = -1; tileY <= map.getHeight(); tileY++) {
 			for (var tileX = -1; tileX <= map.getWidth(); tileX++) {
+
+				var x = TILE_SIZE + tileX * TILE_SIZE;
+				var y = TILE_SIZE + tileY * TILE_SIZE;
+				var width = TILE_SIZE - 2;
+				var height = TILE_SIZE - 2;
+
 				switch (map.getMaterial(tileX, tileY)) {
-				case BOMB:
-					graphics.setColor(Color.BLACK);
-					break;
 				case BRICK:
-					graphics.setColor(Color.ORANGE);
+					graphics.drawImage(Textures.getBrick(), x, y, TILE_SIZE, TILE_SIZE, null);
 					break;
 				case CONCRETE:
-					graphics.setColor(Color.GRAY);
-					break;
-				case EMPTY:
-					graphics.setColor(Color.BLACK);
+					graphics.drawImage(Textures.getConcrete(), x, y, TILE_SIZE, TILE_SIZE, null);
 					break;
 				case EXPLOSION:
 					graphics.setColor(Color.RED);
+					graphics.fillRect(x + 1, y + 1, width, height);
+					break;
+				default:
 					break;
 				}
-
-				var x = TILE_SIZE + tileX * TILE_SIZE + 1;
-				var y = TILE_SIZE + tileY * TILE_SIZE + 1;
-				var width = TILE_SIZE - 2;
-				var height = TILE_SIZE - 2;
-				graphics.fillRect(x, y, width, height);
 
 				var bomb = map.getBomb(tileX, tileY);
 				if (bomb != null) {
@@ -120,7 +117,7 @@ public class Viewport extends JPanel {
 					var color = new Color(128 + (int) (127 * percentage), 128 - (int) (127 * percentage),
 							128 - (int) (127 * percentage));
 					graphics.setColor(color);
-					graphics.fillOval(x, y, width, height);
+					graphics.fillOval(x + 1, y + 1, width, height);
 				}
 			}
 		}
