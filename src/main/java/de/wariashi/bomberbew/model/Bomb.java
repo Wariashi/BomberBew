@@ -6,15 +6,28 @@ package de.wariashi.bomberbew.model;
  * @author Wariashi
  */
 public class Bomb {
+	private int range;
 	private int timer;
 
 	/**
 	 * Creates a new bomb.
 	 * 
+	 * @param range the range of the explosion
 	 * @param timer the number of remaining ticks
 	 */
-	public Bomb(int timer) {
+	public Bomb(int range, int timer) {
+		this.range = range;
 		this.timer = timer;
+	}
+
+	/**
+	 * Returns the range of the explosion. A range of 0 indicates that only the tile
+	 * containing the bomb will explode.
+	 * 
+	 * @return the range of the explosion
+	 */
+	public int getRange() {
+		return range;
 	}
 
 	/**
