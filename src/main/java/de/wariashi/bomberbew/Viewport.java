@@ -92,8 +92,6 @@ public class Viewport extends JPanel {
 
 				var x = TILE_SIZE + tileX * TILE_SIZE;
 				var y = TILE_SIZE + tileY * TILE_SIZE;
-				var width = TILE_SIZE - 2;
-				var height = TILE_SIZE - 2;
 
 				switch (map.getMaterial(tileX, tileY)) {
 				case BRICK:
@@ -113,10 +111,7 @@ public class Viewport extends JPanel {
 				if (bomb != null) {
 					var bombTimer = bomb.getTimer();
 					var percentage = 1 - (bombTimer / (double) map.getIgnitionDuration());
-					var color = new Color(128 + (int) (127 * percentage), 128 - (int) (127 * percentage),
-							128 - (int) (127 * percentage));
-					graphics.setColor(color);
-					graphics.fillOval(x + 1, y + 1, width, height);
+					graphics.drawImage(Textures.getBomb(percentage), x, y, TILE_SIZE, TILE_SIZE, null);
 				}
 			}
 		}
