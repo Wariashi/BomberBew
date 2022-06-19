@@ -41,15 +41,16 @@ public class Map {
 	 * Drops a {@link Bomb} at the given location. If the given coordinates are
 	 * outside of the map, this method will fail silently.
 	 * 
-	 * @param x the x coordinate
-	 * @param y the y coordinate
+	 * @param owner the {@link Player} that has playced the bomb
+	 * @param x     the x coordinate
+	 * @param y     the y coordinate
 	 */
-	public void dropBomb(int x, int y) {
+	public void dropBomb(Player owner, int x, int y) {
 		if (x < 0 || width <= x || y < 0 || height <= y) {
 			return;
 		}
 		materials[x][y] = Material.BOMB;
-		bombs[x][y] = new Bomb(2, getIgnitionDuration());
+		bombs[x][y] = new Bomb(owner, 2, getIgnitionDuration());
 	}
 
 	/**
@@ -167,7 +168,9 @@ public class Map {
 					var range = bomb.getRange();
 					var timer = bomb.getTimer();
 					if (timer == 1) {
+						var owner = bomb.getOwner();
 						detonate(x, y, range);
+						owner.addBomb();
 					}
 					if (timer > 0) {
 						bomb.step();

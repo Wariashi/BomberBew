@@ -8,6 +8,9 @@ import de.wariashi.bomberbew.controller.ControllerOutput;
 public class Player {
 	private Map map;
 
+	private final Object bombLock = new Object();
+	private int bombsLeft = 1;
+
 	private int tileX;
 	private int tileY;
 	private int offsetX;
@@ -23,6 +26,12 @@ public class Player {
 
 		var random = new Random();
 		color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+	}
+
+	public void addBomb() {
+		synchronized (bombLock) {
+			bombsLeft++;
+		}
 	}
 
 	public Color getColor() {
@@ -53,8 +62,11 @@ public class Player {
 		move(direction);
 
 		var dropBomb = output.getDropBomb();
-		if (dropBomb) {
-			map.dropBomb(tileX, tileY);
+		if (dropBomb && bombsLeft > 0) {
+			map.dropBomb(this, tileX, tileY);
+			synchronized (bombLock) {
+				bombsLeft--;
+			}
 		}
 	}
 
