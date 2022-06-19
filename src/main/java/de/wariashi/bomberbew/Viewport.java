@@ -103,8 +103,7 @@ public class Viewport extends JPanel {
 					graphics.drawImage(Textures.getConcrete(), x, y, TILE_SIZE, TILE_SIZE, null);
 					break;
 				case EXPLOSION:
-					graphics.setColor(Color.RED);
-					graphics.fillRect(x + 1, y + 1, width, height);
+					graphics.drawImage(Textures.getExplosion(), x, y, TILE_SIZE, TILE_SIZE, null);
 					break;
 				default:
 					break;

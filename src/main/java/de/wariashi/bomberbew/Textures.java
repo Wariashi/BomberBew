@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 public class Textures {
 	private static BufferedImage brick;
 	private static BufferedImage concrete;
+	private static BufferedImage explosion;
 
 	private Textures() throws IllegalAccessException {
 		throw new IllegalAccessException();
@@ -25,6 +26,10 @@ public class Textures {
 		return concrete;
 	}
 
+	public static BufferedImage getExplosion() {
+		return explosion;
+	}
+
 	private static BufferedImage getTexture(String texturename) {
 		var path = "textures" + File.separator + texturename;
 		var classLoader = ClassLoader.getSystemClassLoader();
@@ -39,5 +44,6 @@ public class Textures {
 	private static void loadTextures() {
 		brick = getTexture("Brick.png");
 		concrete = getTexture("Concrete.png");
+		explosion = getTexture("Explosion.png");
 	}
 }
