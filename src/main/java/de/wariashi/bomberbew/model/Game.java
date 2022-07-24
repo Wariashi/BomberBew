@@ -106,6 +106,7 @@ public class Game {
 				exception.printStackTrace();
 			}
 		}
+		checkForWinner();
 	}
 
 	public void updateControllers(Player[] players, Controller[] controllers) {
@@ -114,5 +115,28 @@ public class Game {
 		}
 		this.players = players;
 		this.controllers = controllers;
+	}
+
+	private void checkForWinner() {
+		var playersLeft = 0;
+		var winner = "";
+		for (int playerIndex = 0; playerIndex < players.length; playerIndex++) {
+			var player = players[playerIndex];
+			if (player != null && player.isAlive()) {
+				playersLeft++;
+				winner = controllers[playerIndex].getName();
+			}
+		}
+		if (playersLeft == 0) {
+			Clock.stop();
+			var title = "Draw!";
+			var message = "All players died.";
+			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+		} else if (playersLeft == 1) {
+			Clock.stop();
+			var title = "Someone won!";
+			var message = winner + " won.";
+			JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 }
