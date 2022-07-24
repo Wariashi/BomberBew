@@ -11,6 +11,7 @@ public class Player {
 	private final Object bombLock = new Object();
 	private int bombsLeft = 1;
 
+	private boolean alive = true;
 	private int tileX;
 	private int tileY;
 	private int offsetX;
@@ -54,7 +55,18 @@ public class Player {
 		return tileY;
 	}
 
+	public boolean isAlive() {
+		return alive;
+	}
+
 	public void step(ControllerOutput output) {
+		if (map.getMaterial(tileX, tileY) == Material.EXPLOSION) {
+			alive = false;
+		}
+		if (!alive) {
+			return;
+		}
+
 		var direction = output.getDirection();
 		if (getOffsetX() != 0 || getOffsetY() != 0) {
 			direction = velocity;

@@ -65,7 +65,7 @@ public class Viewport extends JPanel {
 
 		var players = game.getPlayers();
 		for (var player : players) {
-			if (player == null) {
+			if (player == null || !player.isAlive()) {
 				continue;
 			}
 
