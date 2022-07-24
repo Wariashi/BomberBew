@@ -21,6 +21,10 @@ import de.wariashi.bomberbew.model.Player;
 
 @SuppressWarnings("serial")
 public class BomberBew extends JFrame {
+	private static final double BRICK_DENSITY = 0.75;
+	private static final int MAP_WIDTH = 13;
+	private static final int MAP_HEIGHT = 9;
+
 	// model
 	private transient Game game;
 	private transient Map map;
@@ -34,13 +38,15 @@ public class BomberBew extends JFrame {
 	private JComboBox<ControllerEnum> controllerSelectorBottomRight;
 	private JButton start;
 	private JButton stop;
+	private JButton reset;
+	private Viewport viewport;
 
 	public static void main(String[] args) {
 		new BomberBew();
 	}
 
 	public BomberBew() {
-		map = new Map(13, 9, 0.75);
+		map = new Map(MAP_WIDTH, MAP_HEIGHT, BRICK_DENSITY);
 		game = new Game(map, players, controllers);
 		Clock.setGame(game);
 		Clock.setTicksPerSecond(100);
@@ -74,6 +80,7 @@ public class BomberBew extends JFrame {
 
 		start.addActionListener(event -> {
 			start.setEnabled(false);
+			reset.setEnabled(false);
 			controllerSelectorTopLeft.setEnabled(false);
 			controllerSelectorTopRight.setEnabled(false);
 			controllerSelectorBottomLeft.setEnabled(false);
@@ -90,54 +97,44 @@ public class BomberBew extends JFrame {
 			controllerSelectorBottomLeft.setEnabled(true);
 			controllerSelectorBottomRight.setEnabled(true);
 			start.setEnabled(true);
+			reset.setEnabled(true);
+		});
+
+		reset.addActionListener(event -> {
+			map = new Map(MAP_WIDTH, MAP_HEIGHT, BRICK_DENSITY);
+
+			var controller0 = (ControllerEnum) controllerSelectorTopLeft.getSelectedItem();
+			updateController(0, controller0, 0, 0);
+			var controller1 = (ControllerEnum) controllerSelectorTopRight.getSelectedItem();
+			updateController(1, controller1, map.getWidth() - 1, 0);
+			var controller2 = (ControllerEnum) controllerSelectorBottomLeft.getSelectedItem();
+			updateController(2, controller2, 0, map.getHeight() - 1);
+			var controller3 = (ControllerEnum) controllerSelectorBottomRight.getSelectedItem();
+			updateController(3, controller3, map.getWidth() - 1, map.getHeight() - 1);
+
+			game = new Game(map, players, controllers);
+			Clock.setGame(game);
+			viewport.setGame(game);
 		});
 
 		controllerSelectorTopLeft.addItemListener(event -> {
 			var item = (ControllerEnum) controllerSelectorTopLeft.getSelectedItem();
-			if (item == ControllerEnum.NONE) {
-				players[0] = null;
-				controllers[0] = null;
-			} else {
-				players[0] = new Player(map, 0, 0);
-				controllers[0] = item.createController();
-			}
-			game.updateControllers(players, controllers);
+			updateController(0, item, 0, 0);
 		});
 
 		controllerSelectorTopRight.addItemListener(event -> {
 			var item = (ControllerEnum) controllerSelectorTopRight.getSelectedItem();
-			if (item == ControllerEnum.NONE) {
-				players[1] = null;
-				controllers[1] = null;
-			} else {
-				players[1] = new Player(map, map.getWidth() - 1, 0);
-				controllers[1] = item.createController();
-			}
-			game.updateControllers(players, controllers);
+			updateController(1, item, map.getWidth() - 1, 0);
 		});
 
 		controllerSelectorBottomLeft.addItemListener(event -> {
 			var item = (ControllerEnum) controllerSelectorBottomLeft.getSelectedItem();
-			if (item == ControllerEnum.NONE) {
-				players[2] = null;
-				controllers[2] = null;
-			} else {
-				players[2] = new Player(map, 0, map.getHeight() - 1);
-				controllers[2] = item.createController();
-			}
-			game.updateControllers(players, controllers);
+			updateController(2, item, 0, map.getHeight() - 1);
 		});
 
 		controllerSelectorBottomRight.addItemListener(event -> {
 			var item = (ControllerEnum) controllerSelectorBottomRight.getSelectedItem();
-			if (item == ControllerEnum.NONE) {
-				players[3] = null;
-				controllers[3] = null;
-			} else {
-				players[3] = new Player(map, map.getWidth() - 1, map.getHeight() - 1);
-				controllers[3] = item.createController();
-			}
-			game.updateControllers(players, controllers);
+			updateController(3, item, map.getWidth() - 1, map.getHeight() - 1);
 		});
 	}
 
@@ -179,8 +176,14 @@ public class BomberBew extends JFrame {
 		stop.setFocusable(false);
 		controllButtons.add(stop);
 
+		// reset button
+		reset = new JButton("Reset");
+		reset.setFocusable(false);
+		controllButtons.add(reset);
+
 		// viewport
-		add(new Viewport(game), BorderLayout.CENTER);
+		viewport = new Viewport(game);
+		add(viewport, BorderLayout.CENTER);
 
 		// toolbar south
 		var toolbarSouth = new JPanel();
@@ -205,5 +208,16 @@ public class BomberBew extends JFrame {
 
 		addListeners();
 		setVisible(true);
+	}
+
+	private void updateController(int index, ControllerEnum controller, int playerX, int playerY) {
+		if (controller == ControllerEnum.NONE) {
+			players[index] = null;
+			controllers[index] = null;
+		} else {
+			players[index] = new Player(map, playerX, playerY);
+			controllers[index] = controller.createController();
+		}
+		game.updateControllers(players, controllers);
 	}
 }

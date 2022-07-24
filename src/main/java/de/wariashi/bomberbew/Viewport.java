@@ -54,6 +54,10 @@ public class Viewport extends JPanel {
 		}
 	}
 
+	public void setGame(Game game) {
+		this.game = game;
+	}
+
 	private void addPlayers(BufferedImage map) {
 		var graphics = map.createGraphics();
 
