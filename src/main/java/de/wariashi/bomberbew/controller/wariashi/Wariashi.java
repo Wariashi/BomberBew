@@ -30,7 +30,7 @@ public class Wariashi implements Controller {
 		}
 
 		var enemies = input.getEnemyData();
-		if (enemies == null || enemies.isEmpty()) {
+		if (enemies.isEmpty()) {
 			return null;
 		}
 
@@ -43,10 +43,6 @@ public class Wariashi implements Controller {
 			return null;
 		}
 		var player = input.getPlayerData();
-		if (player == null) {
-			return null;
-		}
-
 		var distanceX = target.x - player.getTileX();
 		var distanceY = target.y - player.getTileY();
 		if (distanceX == 0 && distanceY == 0) {
