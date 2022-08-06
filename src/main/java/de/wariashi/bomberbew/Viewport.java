@@ -54,6 +54,10 @@ public class Viewport extends JPanel {
 		}
 	}
 
+	public void setGame(Game game) {
+		this.game = game;
+	}
+
 	private void addPlayers(BufferedImage map) {
 		var graphics = map.createGraphics();
 
@@ -65,7 +69,7 @@ public class Viewport extends JPanel {
 
 		var players = game.getPlayers();
 		for (var player : players) {
-			if (player == null) {
+			if (player == null || !player.isAlive()) {
 				continue;
 			}
 
@@ -92,8 +96,6 @@ public class Viewport extends JPanel {
 
 				var x = TILE_SIZE + tileX * TILE_SIZE;
 				var y = TILE_SIZE + tileY * TILE_SIZE;
-				var width = TILE_SIZE - 2;
-				var height = TILE_SIZE - 2;
 
 				switch (map.getMaterial(tileX, tileY)) {
 				case BRICK:
@@ -103,8 +105,7 @@ public class Viewport extends JPanel {
 					graphics.drawImage(Textures.getConcrete(), x, y, TILE_SIZE, TILE_SIZE, null);
 					break;
 				case EXPLOSION:
-					graphics.setColor(Color.RED);
-					graphics.fillRect(x + 1, y + 1, width, height);
+					graphics.drawImage(Textures.getExplosion(), x, y, TILE_SIZE, TILE_SIZE, null);
 					break;
 				default:
 					break;
@@ -114,10 +115,7 @@ public class Viewport extends JPanel {
 				if (bomb != null) {
 					var bombTimer = bomb.getTimer();
 					var percentage = 1 - (bombTimer / (double) map.getIgnitionDuration());
-					var color = new Color(128 + (int) (127 * percentage), 128 - (int) (127 * percentage),
-							128 - (int) (127 * percentage));
-					graphics.setColor(color);
-					graphics.fillOval(x + 1, y + 1, width, height);
+					graphics.drawImage(Textures.getBomb(percentage), x, y, TILE_SIZE, TILE_SIZE, null);
 				}
 			}
 		}

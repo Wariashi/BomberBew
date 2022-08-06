@@ -9,6 +9,7 @@ import de.wariashi.bomberbew.model.Player;
  * can not interact with it directly.
  */
 public class PlayerData {
+	private final boolean alive;
 	private final int tileX;
 	private final int tileY;
 	private final int offsetX;
@@ -24,6 +25,7 @@ public class PlayerData {
 		if (player == null) {
 			throw new IllegalArgumentException();
 		}
+		alive = player.isAlive();
 		tileX = player.getTileX();
 		tileY = player.getTileY();
 		offsetX = player.getOffsetX();
@@ -72,5 +74,15 @@ public class PlayerData {
 	 */
 	public int getTileY() {
 		return tileY;
+	}
+
+	/**
+	 * Returns whether the {@link Player} is still alive.
+	 * 
+	 * @return <code>true</code> if the {@link Player} is alive, <code>false</code>
+	 *         otherwise
+	 */
+	public boolean isAlive() {
+		return alive;
 	}
 }

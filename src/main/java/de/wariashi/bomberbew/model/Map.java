@@ -41,15 +41,16 @@ public class Map {
 	 * Drops a {@link Bomb} at the given location. If the given coordinates are
 	 * outside of the map, this method will fail silently.
 	 * 
-	 * @param x the x coordinate
-	 * @param y the y coordinate
+	 * @param owner the {@link Player} that has playced the bomb
+	 * @param x     the x coordinate
+	 * @param y     the y coordinate
 	 */
-	public void dropBomb(int x, int y) {
+	public void dropBomb(Player owner, int x, int y) {
 		if (x < 0 || width <= x || y < 0 || height <= y) {
 			return;
 		}
 		materials[x][y] = Material.BOMB;
-		bombs[x][y] = new Bomb(getIgnitionDuration());
+		bombs[x][y] = new Bomb(owner, 2, getIgnitionDuration());
 	}
 
 	/**
@@ -164,9 +165,12 @@ public class Map {
 				}
 				var bomb = getBomb(x, y);
 				if (bomb != null) {
+					var range = bomb.getRange();
 					var timer = bomb.getTimer();
 					if (timer == 1) {
-						detonate(x, y);
+						var owner = bomb.getOwner();
+						detonate(x, y, range);
+						owner.addBomb();
 					}
 					if (timer > 0) {
 						bomb.step();
@@ -237,18 +241,19 @@ public class Map {
 	 * {@link Material#EXPLOSION explosion}. If another {@link Bomb} is hit by the
 	 * {@link Material#EXPLOSION explosion}, it explodes as well.
 	 * 
-	 * @param x the x coordinate of the detonation
-	 * @param y the y coordinate of the detonation
+	 * @param x     the x coordinate of the explosion
+	 * @param y     the y coordinate of the explosion
+	 * @param range the range of the explosion
 	 */
-	private void detonate(int x, int y) {
+	private void detonate(int x, int y, int range) {
 		bombs[x][y] = null;
 		materials[x][y] = Material.EXPLOSION;
 		explosionTimers[x][y] = 20;
 
-		detonateEast(x, y);
-		detonateNorth(x, y);
-		detonateSouth(x, y);
-		detonateWest(x, y);
+		detonateEast(x, y, range);
+		detonateNorth(x, y, range);
+		detonateSouth(x, y, range);
+		detonateWest(x, y, range);
 	}
 
 	/**
@@ -257,18 +262,19 @@ public class Map {
 	 * another {@link Material#BOMB bomb} is hit by the {@link Material#EXPLOSION
 	 * explosion}, it explodes as well.
 	 * 
-	 * @param x the x coordinate of the detonation
-	 * @param y the y coordinate of the detonation
+	 * @param x     the x coordinate of the explosion
+	 * @param y     the y coordinate of the explosion
+	 * @param range the range of the explosion
 	 */
-	private void detonateEast(int x, int y) {
-		for (var i = 0; i <= 2; i++) {
+	private void detonateEast(int x, int y, int range) {
+		for (var i = 0; i <= range; i++) {
 			var material = getMaterial(x + i, y);
 			boolean stop = false;
 			if (material == Material.BRICK || material == Material.CONCRETE) {
 				stop = true;
 			}
 			if (material == Material.BOMB) {
-				detonate(x + i, y);
+				detonate(x + i, y, range);
 			}
 			if (material != Material.CONCRETE) {
 				materials[x + i][y] = Material.EXPLOSION;
@@ -286,18 +292,19 @@ public class Map {
 	 * If another {@link Material#BOMB bomb} is hit by the {@link Material#EXPLOSION
 	 * explosion}, it explodes as well.
 	 * 
-	 * @param x the x coordinate of the detonation
-	 * @param y the y coordinate of the detonation
+	 * @param x     the x coordinate of the explosion
+	 * @param y     the y coordinate of the explosion
+	 * @param range the range of the explosion
 	 */
-	private void detonateNorth(int x, int y) {
-		for (var i = 0; i <= 2; i++) {
+	private void detonateNorth(int x, int y, int range) {
+		for (var i = 0; i <= range; i++) {
 			var material = getMaterial(x, y - i);
 			boolean stop = false;
 			if (material == Material.BRICK || material == Material.CONCRETE) {
 				stop = true;
 			}
 			if (material == Material.BOMB) {
-				detonate(x, y - i);
+				detonate(x, y - i, range);
 			}
 			if (material != Material.CONCRETE) {
 				materials[x][y - i] = Material.EXPLOSION;
@@ -315,18 +322,19 @@ public class Map {
 	 * If another {@link Material#BOMB bomb} is hit by the {@link Material#EXPLOSION
 	 * explosion}, it explodes as well.
 	 * 
-	 * @param x the x coordinate of the detonation
-	 * @param y the y coordinate of the detonation
+	 * @param x     the x coordinate of the explosion
+	 * @param y     the y coordinate of the explosion
+	 * @param range the range of the explosion
 	 */
-	private void detonateSouth(int x, int y) {
-		for (var i = 0; i <= 2; i++) {
+	private void detonateSouth(int x, int y, int range) {
+		for (var i = 0; i <= range; i++) {
 			var material = getMaterial(x, y + i);
 			boolean stop = false;
 			if (material == Material.BRICK || material == Material.CONCRETE) {
 				stop = true;
 			}
 			if (material == Material.BOMB) {
-				detonate(x, y + i);
+				detonate(x, y + i, range);
 			}
 			if (material != Material.CONCRETE) {
 				materials[x][y + i] = Material.EXPLOSION;
@@ -344,18 +352,19 @@ public class Map {
 	 * another {@link Material#BOMB bomb} is hit by the {@link Material#EXPLOSION
 	 * explosion}, it explodes as well.
 	 * 
-	 * @param x the x coordinate of the detonation
-	 * @param y the y coordinate of the detonation
+	 * @param x     the x coordinate of the explosion
+	 * @param y     the y coordinate of the explosion
+	 * @param range the range of the explosion
 	 */
-	private void detonateWest(int x, int y) {
-		for (var i = 0; i <= 2; i++) {
+	private void detonateWest(int x, int y, int range) {
+		for (var i = 0; i <= range; i++) {
 			var material = getMaterial(x - i, y);
 			boolean stop = false;
 			if (material == Material.BRICK || material == Material.CONCRETE) {
 				stop = true;
 			}
 			if (material == Material.BOMB) {
-				detonate(x - i, y);
+				detonate(x - i, y, range);
 			}
 			if (material != Material.CONCRETE) {
 				materials[x - i][y] = Material.EXPLOSION;

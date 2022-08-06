@@ -9,6 +9,7 @@ import de.wariashi.bomberbew.model.Player;
  * @author Wariashi
  */
 public class BombData {
+	private final int range;
 	private final int timer;
 
 	/**
@@ -17,7 +18,18 @@ public class BombData {
 	 * @param bomb the {@link Bomb} that this object represents
 	 */
 	public BombData(Bomb bomb) {
+		range = bomb.getRange();
 		timer = bomb.getTimer();
+	}
+
+	/**
+	 * Returns the range of the explosion. A range of 0 indicates that only the tile
+	 * containing the bomb will explode.
+	 * 
+	 * @return the range of the explosion
+	 */
+	public int getRange() {
+		return range;
 	}
 
 	/**
