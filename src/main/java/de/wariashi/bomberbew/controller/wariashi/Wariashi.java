@@ -5,7 +5,6 @@ import java.awt.Point;
 import de.wariashi.bomberbew.controller.Controller;
 import de.wariashi.bomberbew.controller.ControllerInput;
 import de.wariashi.bomberbew.controller.ControllerOutput;
-import de.wariashi.bomberbew.model.Direction;
 
 public class Wariashi implements Controller {
 	private ReachabilityMap reachabilityMap;
@@ -17,13 +16,23 @@ public class Wariashi implements Controller {
 
 	@Override
 	public ControllerOutput update(ControllerInput input) {
+		var target = calculateTarget(input);
+		if (target == null) {
+			return new ControllerOutput();
+		}
+
 		initializeReachabilityMap(input);
 
 		var output = new ControllerOutput();
+		if (reachabilityMap.isReachable(target.x, target.y)) {
+			var pathfinding = new Pathfinding(input.getMapData(), target.x, target.y);
 
-		var target = calculateTarget(input);
-		if (target != null && reachabilityMap.isReachable(target.x, target.y)) {
-			var direction = getDirectionToTarget(input, target);
+			var player = input.getPlayerData();
+			var playerX = player.getTileX();
+			var playerY = player.getTileY();
+
+			var direction = pathfinding.getDirection(playerX, playerY);
+
 			output.setDirection(direction);
 		}
 
@@ -42,38 +51,6 @@ public class Wariashi implements Controller {
 
 		var firstEnemy = enemies.get(0);
 		return new Point(firstEnemy.getTileX(), firstEnemy.getTileY());
-	}
-
-	private Direction getDirectionToTarget(ControllerInput input, Point target) {
-		if (input == null || target == null) {
-			return null;
-		}
-		var player = input.getPlayerData();
-		var distanceX = target.x - player.getTileX();
-		var distanceY = target.y - player.getTileY();
-		if (distanceX == 0 && distanceY == 0) {
-			return null;
-		} else if (distanceX == 0) {
-			if (distanceY < 0) {
-				return Direction.NORTH;
-			} else {
-				return Direction.SOUTH;
-			}
-		} else if (distanceY == 0) {
-			if (distanceX < 0) {
-				return Direction.WEST;
-			} else {
-				return Direction.EAST;
-			}
-		} else if (distanceX < 0 && distanceY < 0) {
-			return Direction.NORTH_WEST;
-		} else if (distanceX < 0 && distanceY > 0) {
-			return Direction.SOUTH_WEST;
-		} else if (distanceX > 0 && distanceY < 0) {
-			return Direction.NORTH_EAST;
-		} else {
-			return Direction.SOUTH_EAST;
-		}
 	}
 
 	private void initializeReachabilityMap(ControllerInput input) {
