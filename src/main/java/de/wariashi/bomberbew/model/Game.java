@@ -98,6 +98,7 @@ public class Game {
 			try {
 				var controllerOutput = controller.update(controllerInput);
 				player.step(controllerOutput);
+				player.setImage(controller.getPlayerImage());
 			} catch (Exception exception) {
 				Clock.stop();
 				var message = exception.getMessage();

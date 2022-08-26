@@ -1,5 +1,7 @@
 package de.wariashi.bomberbew.controller;
 
+import java.awt.image.BufferedImage;
+
 import de.wariashi.bomberbew.model.Game;
 import de.wariashi.bomberbew.model.Player;
 
@@ -14,6 +16,8 @@ public interface Controller {
 	 * @return a human readable name of the {@link Controller}
 	 */
 	public String getName();
+
+	public BufferedImage getPlayerImage();
 
 	/**
 	 * This method is called periodically to let the {@link Controller} decide what

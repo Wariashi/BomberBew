@@ -1,7 +1,6 @@
 package de.wariashi.bomberbew.model;
 
-import java.awt.Color;
-import java.util.Random;
+import java.awt.image.BufferedImage;
 
 import de.wariashi.bomberbew.controller.ControllerOutput;
 
@@ -18,15 +17,12 @@ public class Player {
 	private int offsetY;
 	private Direction velocity;
 
-	private Color color;
+	private BufferedImage image;
 
 	public Player(Map map, int tileX, int tileY) {
 		this.map = map;
 		this.tileX = tileX;
 		this.tileY = tileY;
-
-		var random = new Random();
-		color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
 	}
 
 	public void addBomb() {
@@ -35,8 +31,8 @@ public class Player {
 		}
 	}
 
-	public Color getColor() {
-		return color;
+	public BufferedImage getImage() {
+		return image;
 	}
 
 	public int getOffsetX() {
@@ -57,6 +53,10 @@ public class Player {
 
 	public boolean isAlive() {
 		return alive;
+	}
+
+	public void setImage(BufferedImage image) {
+		this.image = image;
 	}
 
 	public void step(ControllerOutput output) {

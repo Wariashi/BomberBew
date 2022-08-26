@@ -73,12 +73,10 @@ public class Viewport extends JPanel {
 				continue;
 			}
 
-			graphics.setColor(player.getColor());
+			var playerX = mapOffsetX + player.getTileX() * TILE_SIZE + player.getOffsetX() + imageOffsetX;
+			var playerY = mapOffsetY + player.getTileY() * TILE_SIZE + player.getOffsetY() + imageOffsetY;
 
-			var playerX = mapOffsetX + player.getTileX() * TILE_SIZE + player.getOffsetX();
-			var playerY = mapOffsetY + player.getTileY() * TILE_SIZE + player.getOffsetY();
-
-			graphics.fillOval(imageOffsetX + playerX + 2, imageOffsetY + playerY + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+			graphics.drawImage(player.getImage(), playerX, playerY, TILE_SIZE, TILE_SIZE, null);
 		}
 		graphics.dispose();
 	}

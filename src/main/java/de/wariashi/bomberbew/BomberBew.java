@@ -217,6 +217,7 @@ public class BomberBew extends JFrame {
 		} else {
 			players[index] = new Player(map, playerX, playerY);
 			controllers[index] = controller.createController();
+			players[index].setImage(controllers[index].getPlayerImage());
 		}
 		game.updateControllers(players, controllers);
 	}

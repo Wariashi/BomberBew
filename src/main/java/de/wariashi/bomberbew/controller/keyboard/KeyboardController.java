@@ -1,6 +1,8 @@
 package de.wariashi.bomberbew.controller.keyboard;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 import de.wariashi.bomberbew.controller.Controller;
 import de.wariashi.bomberbew.controller.ControllerInput;
@@ -17,9 +19,24 @@ public class KeyboardController implements Controller {
 	// bombs
 	private boolean spacePressed = false;
 
+	// ui
+	private BufferedImage image;
+
+	public KeyboardController() {
+		image = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
+		var graphics = image.getGraphics();
+		graphics.setColor(new Color(200, 200, 0));
+		graphics.fillOval(0, 0, 32, 32);
+	}
+
 	@Override
 	public String getName() {
 		return "Keyboard";
+	}
+
+	@Override
+	public BufferedImage getPlayerImage() {
+		return image;
 	}
 
 	@Override
