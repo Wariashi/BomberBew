@@ -169,18 +169,19 @@ public class Player {
 	}
 
 	private void recalculatePosition() {
-		if (offsetX < -16) {
+		int halfTile = Game.STEPS_PER_TILE / 2;
+		if (offsetX < -halfTile) {
 			tileX--;
-			offsetX = 15;
-		} else if (offsetX > 15) {
+			offsetX = halfTile - 1;
+		} else if (offsetX > halfTile - 1) {
 			tileX++;
-			offsetX = -16;
-		} else if (offsetY < -16) {
+			offsetX = -halfTile;
+		} else if (offsetY < -halfTile) {
 			tileY--;
-			offsetY = 15;
-		} else if (offsetY > 15) {
+			offsetY = halfTile - 1;
+		} else if (offsetY > halfTile - 1) {
 			tileY++;
-			offsetY = -16;
+			offsetY = -halfTile;
 		}
 	}
 }
