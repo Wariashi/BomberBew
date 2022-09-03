@@ -8,7 +8,7 @@ public class Player {
 	private Map map;
 
 	private final Object bombLock = new Object();
-	private int bombsLeft = 1;
+	private int bombsLeft = 3;
 
 	private boolean alive = true;
 	private int tileX;
@@ -74,7 +74,14 @@ public class Player {
 		move(direction);
 
 		var dropBomb = output.getDropBomb();
-		if (dropBomb && bombsLeft > 0) {
+		if (dropBomb) {
+			dropBomb();
+		}
+	}
+
+	private void dropBomb() {
+		var tileIsEmpty = map.getMaterial(tileX, tileY) == Material.EMPTY;
+		if (tileIsEmpty && bombsLeft > 0) {
 			map.dropBomb(this, tileX, tileY);
 			synchronized (bombLock) {
 				bombsLeft--;
