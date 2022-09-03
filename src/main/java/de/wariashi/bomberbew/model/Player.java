@@ -8,7 +8,7 @@ public class Player {
 	private Map map;
 
 	private final Object bombLock = new Object();
-	private int bombsLeft = 1;
+	private int bombsLeft = 3;
 
 	private boolean alive = true;
 	private int tileX;
