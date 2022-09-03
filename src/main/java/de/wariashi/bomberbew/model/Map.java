@@ -168,9 +168,7 @@ public class Map {
 					var range = bomb.getRange();
 					var timer = bomb.getTimer();
 					if (timer == 1) {
-						var owner = bomb.getOwner();
 						detonate(x, y, range);
-						owner.addBomb();
 					}
 					if (timer > 0) {
 						bomb.step();
@@ -246,6 +244,10 @@ public class Map {
 	 * @param range the range of the explosion
 	 */
 	private void detonate(int x, int y, int range) {
+		var bomb = bombs[x][y];
+		var owner = bomb.getOwner();
+		owner.addBomb();
+
 		bombs[x][y] = null;
 		materials[x][y] = Material.EXPLOSION;
 		explosionTimers[x][y] = 20;
