@@ -38,9 +38,12 @@ public class Wariashi implements Controller {
 			var playerX = player.getTileX();
 			var playerY = player.getTileY();
 
-			var direction = pathfinding.getDirection(playerX, playerY);
-
-			output.setDirection(direction);
+			if (pathfinding.getDistance(playerX, playerY) <= 1) {
+				output.setDropBomb(true);
+			} else {
+				var direction = pathfinding.getDirection(playerX, playerY);
+				output.setDirection(direction);
+			}
 		}
 
 		return output;

@@ -46,6 +46,15 @@ public class Pathfinding {
 		return null;
 	}
 
+	public int getDistance(int startX, int startY) {
+		// check for map border
+		if (startX < 0 || startY < 0 || distance.length <= startX || distance[startX].length <= startY) {
+			return UNDEFINED;
+		}
+
+		return distance[startX][startY];
+	}
+
 	private void initializeDistanceMap(MapData map) {
 		int height = map.getHeight();
 		int width = map.getWidth();
