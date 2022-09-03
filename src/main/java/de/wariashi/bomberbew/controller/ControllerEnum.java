@@ -13,15 +13,15 @@ public enum ControllerEnum {
 	NONE(null),
 
 	/**
+	 * A {@link Controller} that is using keyboard inputs.
+	 */
+	KEYBOARD(KeyboardController.class),
+
+	/**
 	 * A {@link Controller} that is using an artificial intelligence written by
 	 * Tempii.
 	 */
 	TEMPII(Tempii.class),
-
-	/**
-	 * A {@link Controller} that is using keyboard inputs.
-	 */
-	KEYBOARD(KeyboardController.class),
 
 	/**
 	 * A {@link Controller} that is using an artificial intelligence written by
