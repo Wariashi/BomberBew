@@ -125,7 +125,7 @@ public class Player {
 	}
 
 	private boolean moveDown() {
-		if (map.getMaterial(tileX, tileY + 1) == Material.EMPTY || getOffsetY() < 0) {
+		if (getOffsetY() != 0 || map.getMaterial(tileX, tileY + 1) == Material.EMPTY) {
 			offsetY++;
 			recalculatePosition();
 			velocity = Direction.SOUTH;
@@ -136,7 +136,7 @@ public class Player {
 	}
 
 	private boolean moveLeft() {
-		if (map.getMaterial(tileX - 1, tileY) == Material.EMPTY || getOffsetX() > 0) {
+		if (getOffsetX() != 0 || map.getMaterial(tileX - 1, tileY) == Material.EMPTY) {
 			offsetX--;
 			recalculatePosition();
 			velocity = Direction.WEST;
@@ -147,7 +147,7 @@ public class Player {
 	}
 
 	private boolean moveRight() {
-		if (map.getMaterial(tileX + 1, tileY) == Material.EMPTY || getOffsetX() < 0) {
+		if (getOffsetX() != 0 || map.getMaterial(tileX + 1, tileY) == Material.EMPTY) {
 			offsetX++;
 			recalculatePosition();
 			velocity = Direction.EAST;
@@ -158,7 +158,7 @@ public class Player {
 	}
 
 	private boolean moveUp() {
-		if (map.getMaterial(tileX, tileY - 1) == Material.EMPTY || getOffsetY() > 0) {
+		if (getOffsetY() != 0 || map.getMaterial(tileX, tileY - 1) == Material.EMPTY) {
 			offsetY--;
 			recalculatePosition();
 			velocity = Direction.NORTH;
