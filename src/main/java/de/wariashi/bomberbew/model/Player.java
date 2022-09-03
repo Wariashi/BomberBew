@@ -1,7 +1,6 @@
 package de.wariashi.bomberbew.model;
 
-import java.awt.Color;
-import java.util.Random;
+import java.awt.image.BufferedImage;
 
 import de.wariashi.bomberbew.controller.ControllerOutput;
 
@@ -18,15 +17,12 @@ public class Player {
 	private int offsetY;
 	private Direction velocity;
 
-	private Color color;
+	private BufferedImage image;
 
 	public Player(Map map, int tileX, int tileY) {
 		this.map = map;
 		this.tileX = tileX;
 		this.tileY = tileY;
-
-		var random = new Random();
-		color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
 	}
 
 	public void addBomb() {
@@ -35,8 +31,8 @@ public class Player {
 		}
 	}
 
-	public Color getColor() {
-		return color;
+	public BufferedImage getImage() {
+		return image;
 	}
 
 	public int getOffsetX() {
@@ -57,6 +53,10 @@ public class Player {
 
 	public boolean isAlive() {
 		return alive;
+	}
+
+	public void setImage(BufferedImage image) {
+		this.image = image;
 	}
 
 	public void step(ControllerOutput output) {
@@ -125,7 +125,7 @@ public class Player {
 	}
 
 	private boolean moveDown() {
-		if (map.getMaterial(tileX, tileY + 1) == Material.EMPTY || getOffsetY() < 0) {
+		if (getOffsetY() != 0 || map.getMaterial(tileX, tileY + 1) == Material.EMPTY) {
 			offsetY++;
 			recalculatePosition();
 			velocity = Direction.SOUTH;
@@ -136,7 +136,7 @@ public class Player {
 	}
 
 	private boolean moveLeft() {
-		if (map.getMaterial(tileX - 1, tileY) == Material.EMPTY || getOffsetX() > 0) {
+		if (getOffsetX() != 0 || map.getMaterial(tileX - 1, tileY) == Material.EMPTY) {
 			offsetX--;
 			recalculatePosition();
 			velocity = Direction.WEST;
@@ -147,7 +147,7 @@ public class Player {
 	}
 
 	private boolean moveRight() {
-		if (map.getMaterial(tileX + 1, tileY) == Material.EMPTY || getOffsetX() < 0) {
+		if (getOffsetX() != 0 || map.getMaterial(tileX + 1, tileY) == Material.EMPTY) {
 			offsetX++;
 			recalculatePosition();
 			velocity = Direction.EAST;
@@ -158,7 +158,7 @@ public class Player {
 	}
 
 	private boolean moveUp() {
-		if (map.getMaterial(tileX, tileY - 1) == Material.EMPTY || getOffsetY() > 0) {
+		if (getOffsetY() != 0 || map.getMaterial(tileX, tileY - 1) == Material.EMPTY) {
 			offsetY--;
 			recalculatePosition();
 			velocity = Direction.NORTH;
@@ -169,18 +169,19 @@ public class Player {
 	}
 
 	private void recalculatePosition() {
-		if (offsetX < -16) {
+		int halfTile = Game.STEPS_PER_TILE / 2;
+		if (offsetX < -halfTile) {
 			tileX--;
-			offsetX = 15;
-		} else if (offsetX > 15) {
+			offsetX = halfTile - 1;
+		} else if (offsetX > halfTile - 1) {
 			tileX++;
-			offsetX = -16;
-		} else if (offsetY < -16) {
+			offsetX = -halfTile;
+		} else if (offsetY < -halfTile) {
 			tileY--;
-			offsetY = 15;
-		} else if (offsetY > 15) {
+			offsetY = halfTile - 1;
+		} else if (offsetY > halfTile - 1) {
 			tileY++;
-			offsetY = -16;
+			offsetY = -halfTile;
 		}
 	}
 }

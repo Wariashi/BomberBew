@@ -8,7 +8,7 @@ public enum Material {
 	 * A tile that can not be removed by a {@link Player}, but will remove itself
 	 * after a while while also creating an explosion.
 	 */
-	BOMB(false),
+	BOMB(true),
 
 	/**
 	 * A tile that can be removed by a {@link Player} by placing a bomb next to it.

@@ -11,6 +11,10 @@ public class Textures {
 	private static BufferedImage concrete;
 	private static BufferedImage explosion;
 
+	// players
+	private static BufferedImage tempii;
+	private static BufferedImage wariashi;
+
 	private Textures() throws IllegalAccessException {
 		throw new IllegalAccessException();
 	}
@@ -34,6 +38,14 @@ public class Textures {
 
 	public static BufferedImage getExplosion() {
 		return explosion;
+	}
+
+	public static BufferedImage getTempii() {
+		return tempii;
+	}
+
+	public static BufferedImage getWariashi() {
+		return wariashi;
 	}
 
 	private static BufferedImage getTexture(String texturename) {
@@ -69,5 +81,7 @@ public class Textures {
 		brick = getTexture("Brick.png");
 		concrete = getTexture("Concrete.png");
 		explosion = getTexture("Explosion.png");
+		tempii = getTexture("player/Tempii.png");
+		wariashi = getTexture("player/Wariashi.png");
 	}
 }

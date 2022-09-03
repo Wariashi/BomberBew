@@ -15,6 +15,8 @@ import de.wariashi.bomberbew.model.projection.PlayerData;
  * A Game consists of a {@link Map map} and a list of {@link Player players}.
  */
 public class Game {
+	public static final int STEPS_PER_TILE = 32;
+
 	private Map map;
 	private Player[] players;
 	private Controller[] controllers;
@@ -98,6 +100,7 @@ public class Game {
 			try {
 				var controllerOutput = controller.update(controllerInput);
 				player.step(controllerOutput);
+				player.setImage(controller.getPlayerImage());
 			} catch (Exception exception) {
 				Clock.stop();
 				var message = exception.getMessage();

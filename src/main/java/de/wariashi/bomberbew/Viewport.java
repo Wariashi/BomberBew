@@ -10,7 +10,7 @@ import de.wariashi.bomberbew.model.Game;
 
 @SuppressWarnings("serial")
 public class Viewport extends JPanel {
-	private static final int TILE_SIZE = 32;
+	public static final int TILE_SIZE = 128;
 
 	private transient Game game;
 
@@ -59,6 +59,8 @@ public class Viewport extends JPanel {
 	}
 
 	private void addPlayers(BufferedImage map) {
+		var offsetScaling = TILE_SIZE / Game.STEPS_PER_TILE;
+
 		var graphics = map.createGraphics();
 
 		var mapOffsetX = (int) (1.5 * TILE_SIZE);
@@ -73,12 +75,12 @@ public class Viewport extends JPanel {
 				continue;
 			}
 
-			graphics.setColor(player.getColor());
+			var playerX = mapOffsetX + player.getTileX() * TILE_SIZE + offsetScaling * player.getOffsetX()
+					+ imageOffsetX;
+			var playerY = mapOffsetY + player.getTileY() * TILE_SIZE + offsetScaling * player.getOffsetY()
+					+ imageOffsetY;
 
-			var playerX = mapOffsetX + player.getTileX() * TILE_SIZE + player.getOffsetX();
-			var playerY = mapOffsetY + player.getTileY() * TILE_SIZE + player.getOffsetY();
-
-			graphics.fillOval(imageOffsetX + playerX + 2, imageOffsetY + playerY + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+			graphics.drawImage(player.getImage(), playerX, playerY, TILE_SIZE, TILE_SIZE, null);
 		}
 		graphics.dispose();
 	}
