@@ -10,8 +10,6 @@ import de.wariashi.bomberbew.controller.ControllerOutput;
 import de.wariashi.bomberbew.model.Direction;
 
 public class Wariashi implements Controller {
-	private ReachabilityMap reachabilityMap;
-
 	@Override
 	public String getName() {
 		return "Wariashi";
@@ -29,12 +27,9 @@ public class Wariashi implements Controller {
 			return new ControllerOutput();
 		}
 
-		initializeReachabilityMap(input);
-
 		var output = new ControllerOutput();
-		if (reachabilityMap.isReachable(target.x, target.y)) {
-			var pathfinding = new Pathfinding(input.getMapData(), target.x, target.y);
-
+		var pathfinding = new Pathfinding(input.getMapData(), target.x, target.y);
+		if (pathfinding.isReachableFrom(target.x, target.y)) {
 			var player = input.getPlayerData();
 			var playerX = player.getTileX();
 			var playerY = player.getTileY();
@@ -65,13 +60,6 @@ public class Wariashi implements Controller {
 		return new Point(firstEnemy.getTileX(), firstEnemy.getTileY());
 	}
 
-	private void initializeReachabilityMap(ControllerInput input) {
-		var map = input.getMapData();
-		var player = input.getPlayerData();
-		var tileX = player.getTileX();
-		var tileY = player.getTileY();
-		reachabilityMap = new ReachabilityMap(map, tileX, tileY);
-	}
 
 	private Direction invert(Direction direction) {
 		if (direction == null) {

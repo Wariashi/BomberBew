@@ -55,6 +55,10 @@ public class Pathfinding {
 		return distance[startX][startY];
 	}
 
+	public boolean isReachableFrom(int startX, int startY) {
+		return distance[startX][startY] != UNDEFINED;
+	}
+
 	private void initializeDistanceMap(MapData map) {
 		int height = map.getHeight();
 		int width = map.getWidth();
