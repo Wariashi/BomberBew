@@ -2,6 +2,8 @@ package de.wariashi.bomberbew.controller.wariashi;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.wariashi.bomberbew.Textures;
 import de.wariashi.bomberbew.controller.Controller;
@@ -9,8 +11,14 @@ import de.wariashi.bomberbew.controller.ControllerInput;
 import de.wariashi.bomberbew.controller.ControllerOutput;
 import de.wariashi.bomberbew.model.Direction;
 import de.wariashi.bomberbew.model.projection.MapData;
+import de.wariashi.bomberbew.model.projection.PlayerData;
 
 public class Wariashi implements Controller {
+	private List<PlayerData> enemies = new ArrayList<>();
+	private MapData map;
+	private int playerX;
+	private int playerY;
+
 	@Override
 	public String getName() {
 		return "Wariashi";
@@ -23,27 +31,25 @@ public class Wariashi implements Controller {
 
 	@Override
 	public ControllerOutput update(ControllerInput input) {
+		updateVariables(input);
+
 		var output = new ControllerOutput();
 
-		var dangerMap = new DangerMap(input.getMapData());
-
-		var player = input.getPlayerData();
-		var playerX = player.getTileX();
-		var playerY = player.getTileY();
+		var dangerMap = new DangerMap(map);
 		if (dangerMap.isDangerous(playerX, playerY)) {
-			output.setDirection(getDirectionToNearestSafeTile(input.getMapData(), playerX, playerY, dangerMap));
+			output.setDirection(getDirectionToNearestSafeTile(dangerMap));
 			return output;
 		}
 
-		var target = calculateTarget(input);
+		var target = calculateTarget();
 		if (target == null) {
 			return output;
 		}
 
-		var pathfinding = new Pathfinding(input.getMapData(), target.x, target.y);
+		var pathfinding = new Pathfinding(map, target.x, target.y);
 		if (pathfinding.isReachableFrom(target.x, target.y)) {
 
-			var direction = pathfinding.getDirection(playerX, playerY);
+			var direction = pathfinding.getDirectionFrom(playerX, playerY);
 			var nextTile = getNeighbor(playerX, playerY, direction);
 			if (dangerMap.isDangerous(nextTile.x, nextTile.y)) {
 				return output;
@@ -60,12 +66,8 @@ public class Wariashi implements Controller {
 		return output;
 	}
 
-	private Point calculateTarget(ControllerInput input) {
-		if (input == null) {
-			return null;
-		}
+	private Point calculateTarget() {
 
-		var enemies = input.getEnemyData();
 		if (enemies.isEmpty()) {
 			return null;
 		}
@@ -74,8 +76,8 @@ public class Wariashi implements Controller {
 		return new Point(firstEnemy.getTileX(), firstEnemy.getTileY());
 	}
 
-	private Direction getDirectionToNearestSafeTile(MapData map, int currentX, int currentY, DangerMap dangerMap) {
-		var pathfindingToPlayer = new Pathfinding(map, currentX, currentY);
+	private Direction getDirectionToNearestSafeTile(DangerMap dangerMap) {
+		var pathfindingToPlayer = new Pathfinding(map, playerX, playerY);
 
 		Point target = null;
 		var distance = Integer.MAX_VALUE;
@@ -94,7 +96,7 @@ public class Wariashi implements Controller {
 		}
 
 		var pathfindingToTarget = new Pathfinding(map, target.x, target.y);
-		return pathfindingToTarget.getDirection(currentX, currentY);
+		return pathfindingToTarget.getDirectionFrom(playerX, playerY);
 	}
 
 	private Point getNeighbor(int x, int y, Direction direction) {
@@ -147,5 +149,19 @@ public class Wariashi implements Controller {
 		default:
 			return null;
 		}
+	}
+
+	private void updateVariables(ControllerInput input) {
+		if (input == null) {
+			return;
+		}
+
+		enemies = input.getEnemyData();
+
+		map = input.getMapData();
+
+		var player = input.getPlayerData();
+		playerX = player.getTileX();
+		playerY = player.getTileY();
 	}
 }

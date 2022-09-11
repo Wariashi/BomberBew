@@ -18,7 +18,7 @@ public class Pathfinding {
 		updateDistance(map, targetX, targetY + 1);
 	}
 
-	public Direction getDirection(int startX, int startY) {
+	public Direction getDirectionFrom(int startX, int startY) {
 		int currentDistance = distance[startX][startY];
 
 		// check east
