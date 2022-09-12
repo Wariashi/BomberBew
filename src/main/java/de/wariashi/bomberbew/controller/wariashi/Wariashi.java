@@ -48,8 +48,7 @@ public class Wariashi implements Controller {
 		}
 
 		var pathfinding = new Pathfinding(map, target.x, target.y);
-		if (pathfinding.isReachableFrom(target.x, target.y)) {
-
+		if (pathfinding.isReachableFrom(playerX, playerY)) {
 			var direction = pathfinding.getDirectionFrom(playerX, playerY);
 			var nextTile = getNeighbor(playerX, playerY, direction);
 			if (dangerMap.isDangerous(nextTile.x, nextTile.y)) {
@@ -60,6 +59,18 @@ public class Wariashi implements Controller {
 				output.setDropBomb(true);
 				output.setDirection(invert(direction));
 			} else {
+				output.setDirection(direction);
+			}
+		} else { // if target is not reachable
+			var distanceX = target.x - playerX;
+			var distanceY = target.y - playerY;
+			if (Math.abs(distanceX) < Math.abs(distanceY)) {
+				// move in y direction
+				var direction = (distanceY < 0) ? Direction.NORTH : Direction.SOUTH;
+				output.setDirection(direction);
+			} else {
+				// move in x direction
+				var direction = (distanceX < 0) ? Direction.WEST : Direction.EAST;
 				output.setDirection(direction);
 			}
 		}
@@ -74,6 +85,7 @@ public class Wariashi implements Controller {
 			return target;
 		}
 
+		// find nearest reachable enemy
 		var distance = Integer.MAX_VALUE;
 		for (var enemy : enemies) {
 			if (!enemy.isAlive()) {
@@ -91,6 +103,21 @@ public class Wariashi implements Controller {
 		}
 		if (target != null) {
 			return target;
+		}
+
+		// find nearest enemy
+		for (var enemy : enemies) {
+			if (!enemy.isAlive()) {
+				continue;
+			}
+			var enemyX = enemy.getTileX();
+			var enemyY = enemy.getTileY();
+
+			var thisDistance = getManhattanDistance(playerX, playerY, enemyX, enemyY);
+			if (thisDistance < distance) {
+				distance = thisDistance;
+				target = new Point(enemyX, enemyY);
+			}
 		}
 
 		return target;
@@ -115,6 +142,12 @@ public class Wariashi implements Controller {
 
 		var pathfindingToTarget = new Pathfinding(map, target.x, target.y);
 		return pathfindingToTarget.getDirectionFrom(playerX, playerY);
+	}
+
+	private int getManhattanDistance(int x1, int y1, int x2, int y2) {
+		var distanceX = Math.abs(x2 - x1);
+		var distanceY = Math.abs(y2 - y1);
+		return distanceX + distanceY;
 	}
 
 	private Point getNeighbor(int x, int y, Direction direction) {
