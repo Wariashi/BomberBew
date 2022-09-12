@@ -16,6 +16,7 @@ import de.wariashi.bomberbew.model.projection.PlayerData;
 public class Wariashi implements Controller {
 	private List<PlayerData> enemies = new ArrayList<>();
 	private MapData map;
+	private Pathfinding pathfindingToPlayer;
 	private int playerX;
 	private int playerY;
 
@@ -67,18 +68,35 @@ public class Wariashi implements Controller {
 	}
 
 	private Point calculateTarget() {
+		Point target = null;
 
 		if (enemies.isEmpty()) {
-			return null;
+			return target;
 		}
 
-		var firstEnemy = enemies.get(0);
-		return new Point(firstEnemy.getTileX(), firstEnemy.getTileY());
+		var distance = Integer.MAX_VALUE;
+		for (var enemy : enemies) {
+			if (!enemy.isAlive()) {
+				continue;
+			}
+			var enemyX = enemy.getTileX();
+			var enemyY = enemy.getTileY();
+			if (pathfindingToPlayer.isReachableFrom(enemyX, enemyY)) {
+				var thisDistance = pathfindingToPlayer.getDistance(enemyX, enemyY);
+				if (thisDistance < distance) {
+					distance = thisDistance;
+					target = new Point(enemyX, enemyY);
+				}
+			}
+		}
+		if (target != null) {
+			return target;
+		}
+
+		return target;
 	}
 
 	private Direction getDirectionToNearestSafeTile(DangerMap dangerMap) {
-		var pathfindingToPlayer = new Pathfinding(map, playerX, playerY);
-
 		Point target = null;
 		var distance = Integer.MAX_VALUE;
 		for (int y = 0; y < map.getHeight(); y++) {
@@ -163,5 +181,7 @@ public class Wariashi implements Controller {
 		var player = input.getPlayerData();
 		playerX = player.getTileX();
 		playerY = player.getTileY();
+
+		pathfindingToPlayer = new Pathfinding(map, playerX, playerY);
 	}
 }
