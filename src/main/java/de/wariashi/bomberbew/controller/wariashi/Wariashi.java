@@ -38,7 +38,7 @@ public class Wariashi implements Controller {
 		var output = new ControllerOutput();
 
 		if (dangerMap.isDangerous(playerX, playerY)) {
-			output.setDirection(getDirectionToNearestSafeTile());
+			output.setDirection(getDirectionToNearestSafeTile(dangerMap));
 			return output;
 		}
 
@@ -56,8 +56,10 @@ public class Wariashi implements Controller {
 			}
 
 			if (pathfinding.getDistance(playerX, playerY) <= 1) {
-				output.setDropBomb(true);
-				output.setDirection(invert(direction));
+				if (isSafeToDropBomb()) {
+					output.setDropBomb(true);
+					output.setDirection(invert(direction));
+				}
 			} else {
 				output.setDirection(direction);
 			}
@@ -74,9 +76,11 @@ public class Wariashi implements Controller {
 			}
 			var neighbor = getNeighbor(playerX, playerY, direction);
 			if (map.getMaterial(neighbor.x, neighbor.y).isSolid()) {
-				output.setDropBomb(true);
-				output.setDirection(invert(direction));
-			} else {
+				if (isSafeToDropBomb()) {
+					output.setDropBomb(true);
+					output.setDirection(invert(direction));
+				}
+			} else if (!dangerMap.isDangerous(neighbor.x, neighbor.y)) {
 				output.setDirection(direction);
 			}
 		}
@@ -129,7 +133,7 @@ public class Wariashi implements Controller {
 		return target;
 	}
 
-	private Direction getDirectionToNearestSafeTile() {
+	private Direction getDirectionToNearestSafeTile(DangerMap dangerMap) {
 		Point target = null;
 		var distance = Integer.MAX_VALUE;
 		for (int y = 0; y < map.getHeight(); y++) {
@@ -206,6 +210,11 @@ public class Wariashi implements Controller {
 		default:
 			return null;
 		}
+	}
+
+	private boolean isSafeToDropBomb() {
+		var dangerMapWithBomb = dangerMap.withAdditionalBomb(playerX, playerY, 2);
+		return getDirectionToNearestSafeTile(dangerMapWithBomb) != null;
 	}
 
 	private void updateVariables(ControllerInput input) {

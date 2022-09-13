@@ -5,8 +5,10 @@ import de.wariashi.bomberbew.model.projection.MapData;
 
 public class DangerMap {
 	private boolean[][] danger;
+	private MapData map;
 
 	public DangerMap(MapData map) {
+		this.map = map;
 		danger = new boolean[map.getWidth()][map.getHeight()];
 
 		for (int y = 0; y < map.getHeight(); y++) {
@@ -15,8 +17,26 @@ public class DangerMap {
 				if (material == Material.EXPLOSION) {
 					danger[x][y] = true;
 				} else if (material == Material.BOMB) {
-					addBombDangers(map, x, y);
+					var bomb = map.getBomb(x, y);
+					if (bomb != null) {
+						var range = bomb.getRange();
+						addBombDangers(x, y, range);
+					}
 				}
+			}
+		}
+	}
+
+	private DangerMap(DangerMap original) {
+		this.map = original.map;
+
+		var originalDanger = original.danger;
+		int width = originalDanger.length;
+		int height = originalDanger[0].length;
+		danger = new boolean[width][height];
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				danger[x][y] = originalDanger[x][y];
 			}
 		}
 	}
@@ -25,14 +45,14 @@ public class DangerMap {
 		return danger[x][y];
 	}
 
-	private void addBombDangers(MapData map, int x, int y) {
-		var bomb = map.getBomb(x, y);
-		if (bomb == null) {
-			return;
-		}
+	public DangerMap withAdditionalBomb(int x, int y, int range) {
+		var copy = new DangerMap(this);
+		copy.addBombDangers(x, y, range);
+		return copy;
+	}
 
+	private void addBombDangers(int x, int y, int range) {
 		danger[x][y] = true;
-		var range = bomb.getRange();
 
 		// east
 		for (int i = 1; i <= range; i++) {
