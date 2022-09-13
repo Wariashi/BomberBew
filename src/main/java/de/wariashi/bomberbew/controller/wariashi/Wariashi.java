@@ -14,6 +14,7 @@ import de.wariashi.bomberbew.model.projection.MapData;
 import de.wariashi.bomberbew.model.projection.PlayerData;
 
 public class Wariashi implements Controller {
+	private DangerMap dangerMap;
 	private List<PlayerData> enemies = new ArrayList<>();
 	private MapData map;
 	private Pathfinding pathfindingToPlayer;
@@ -36,9 +37,8 @@ public class Wariashi implements Controller {
 
 		var output = new ControllerOutput();
 
-		var dangerMap = new DangerMap(map);
 		if (dangerMap.isDangerous(playerX, playerY)) {
-			output.setDirection(getDirectionToNearestSafeTile(dangerMap));
+			output.setDirection(getDirectionToNearestSafeTile());
 			return output;
 		}
 
@@ -64,13 +64,19 @@ public class Wariashi implements Controller {
 		} else { // if target is not reachable
 			var distanceX = target.x - playerX;
 			var distanceY = target.y - playerY;
+			Direction direction = null;
 			if (Math.abs(distanceX) < Math.abs(distanceY)) {
 				// move in y direction
-				var direction = (distanceY < 0) ? Direction.NORTH : Direction.SOUTH;
-				output.setDirection(direction);
+				direction = (distanceY < 0) ? Direction.NORTH : Direction.SOUTH;
 			} else {
 				// move in x direction
-				var direction = (distanceX < 0) ? Direction.WEST : Direction.EAST;
+				direction = (distanceX < 0) ? Direction.WEST : Direction.EAST;
+			}
+			var neighbor = getNeighbor(playerX, playerY, direction);
+			if (map.getMaterial(neighbor.x, neighbor.y).isSolid()) {
+				output.setDropBomb(true);
+				output.setDirection(invert(direction));
+			} else {
 				output.setDirection(direction);
 			}
 		}
@@ -123,7 +129,7 @@ public class Wariashi implements Controller {
 		return target;
 	}
 
-	private Direction getDirectionToNearestSafeTile(DangerMap dangerMap) {
+	private Direction getDirectionToNearestSafeTile() {
 		Point target = null;
 		var distance = Integer.MAX_VALUE;
 		for (int y = 0; y < map.getHeight(); y++) {
@@ -210,6 +216,8 @@ public class Wariashi implements Controller {
 		enemies = input.getEnemyData();
 
 		map = input.getMapData();
+
+		dangerMap = new DangerMap(map);
 
 		var player = input.getPlayerData();
 		playerX = player.getTileX();
