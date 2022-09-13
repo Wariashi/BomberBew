@@ -58,30 +58,16 @@ public class Wariashi implements Controller {
 			if (pathfinding.getDistance(playerX, playerY) <= 1) {
 				if (isSafeToDropBomb()) {
 					output.setDropBomb(true);
-					output.setDirection(invert(direction));
 				}
 			} else {
 				output.setDirection(direction);
 			}
 		} else { // if target is not reachable
-			var distanceX = target.x - playerX;
-			var distanceY = target.y - playerY;
-			Direction direction = null;
-			if (Math.abs(distanceX) < Math.abs(distanceY)) {
-				// move in y direction
-				direction = (distanceY < 0) ? Direction.NORTH : Direction.SOUTH;
-			} else {
-				// move in x direction
-				direction = (distanceX < 0) ? Direction.WEST : Direction.EAST;
-			}
-			var neighbor = getNeighbor(playerX, playerY, direction);
-			if (map.getMaterial(neighbor.x, neighbor.y).isSolid()) {
-				if (isSafeToDropBomb()) {
-					output.setDropBomb(true);
-					output.setDirection(invert(direction));
-				}
-			} else if (!dangerMap.isDangerous(neighbor.x, neighbor.y)) {
-				output.setDirection(direction);
+			var direction = getBeelineDirectionToTarget(target.x, target.y);
+			if (canWalk(direction)) {
+				output.setDirection(pickSafeDirection(direction));
+			} else if (isSafeToDropBomb()) {
+				output.setDropBomb(true);
 			}
 		}
 
@@ -131,6 +117,55 @@ public class Wariashi implements Controller {
 		}
 
 		return target;
+	}
+
+	private boolean canWalk(Direction direction) {
+		if (direction == null) {
+			return true;
+		}
+		switch (direction) {
+		case NORTH:
+			return !map.getMaterial(playerX, playerY - 1).isSolid();
+		case NORTH_EAST:
+			return !map.getMaterial(playerX, playerY - 1).isSolid() || !map.getMaterial(playerX + 1, playerY).isSolid();
+		case EAST:
+			return !map.getMaterial(playerX + 1, playerY).isSolid();
+		case SOUTH_EAST:
+			return !map.getMaterial(playerX, playerY + 1).isSolid() || !map.getMaterial(playerX + 1, playerY).isSolid();
+		case SOUTH:
+			return !map.getMaterial(playerX, playerY + 1).isSolid();
+		case SOUTH_WEST:
+			return !map.getMaterial(playerX, playerY + 1).isSolid() || !map.getMaterial(playerX - 1, playerY).isSolid();
+		case WEST:
+			return !map.getMaterial(playerX - 1, playerY).isSolid();
+		case NORTH_WEST:
+			return !map.getMaterial(playerX, playerY - 1).isSolid() || !map.getMaterial(playerX - 1, playerY).isSolid();
+		default:
+			return false;
+		}
+	}
+
+	private Direction getBeelineDirectionToTarget(int targetX, int targetY) {
+		var distanceX = targetX - playerX;
+		var distanceY = targetY - playerY;
+
+		if (distanceX == 0) {
+			return (distanceY < 0) ? Direction.NORTH : Direction.SOUTH;
+		} else if (distanceY == 0) {
+			return (distanceX < 0) ? Direction.WEST : Direction.EAST;
+		}
+
+		if (distanceX > 0 && distanceY < 0) {
+			return Direction.NORTH_EAST;
+		} else if (distanceX < 0 && distanceY < 0) {
+			return Direction.NORTH_WEST;
+		} else if (distanceX > 0 && distanceY > 0) {
+			return Direction.SOUTH_EAST;
+		} else if (distanceX < 0 && distanceY > 0) {
+			return Direction.SOUTH_WEST;
+		}
+
+		return null;
 	}
 
 	private Direction getDirectionToNearestSafeTile(DangerMap dangerMap) {
@@ -186,35 +221,59 @@ public class Wariashi implements Controller {
 		}
 	}
 
-	private Direction invert(Direction direction) {
+	private boolean isSafeToDropBomb() {
+		var dangerMapWithBomb = dangerMap.withAdditionalBomb(playerX, playerY, 2);
+		return getDirectionToNearestSafeTile(dangerMapWithBomb) != null;
+	}
+
+	private Direction pickSafeDirection(Direction direction) {
 		if (direction == null) {
 			return null;
 		}
 		switch (direction) {
-		case NORTH:
-			return Direction.SOUTH;
-		case NORTH_EAST:
-			return Direction.SOUTH_WEST;
 		case EAST:
-			return Direction.WEST;
-		case SOUTH_EAST:
+			return dangerMap.isDangerous(playerX + 1, playerY) ? null : Direction.EAST;
+		case NORTH:
+			return dangerMap.isDangerous(playerX, playerY - 1) ? null : Direction.NORTH;
+		case NORTH_EAST:
+			if (dangerMap.isDangerous(playerX + 1, playerY)) {
+				return dangerMap.isDangerous(playerX, playerY - 1) ? null : Direction.NORTH;
+			}
+			if (dangerMap.isDangerous(playerX, playerY - 1)) {
+				return dangerMap.isDangerous(playerX + 1, playerY) ? null : Direction.EAST;
+			}
+			return Direction.NORTH_EAST;
+		case NORTH_WEST:
+			if (dangerMap.isDangerous(playerX - 1, playerY)) {
+				return dangerMap.isDangerous(playerX, playerY - 1) ? null : Direction.NORTH;
+			}
+			if (dangerMap.isDangerous(playerX, playerY - 1)) {
+				return dangerMap.isDangerous(playerX - 1, playerY) ? null : Direction.WEST;
+			}
 			return Direction.NORTH_WEST;
 		case SOUTH:
-			return Direction.NORTH;
-		case SOUTH_WEST:
-			return Direction.NORTH_EAST;
-		case WEST:
-			return Direction.EAST;
-		case NORTH_WEST:
+			return dangerMap.isDangerous(playerX, playerY + 1) ? null : Direction.SOUTH;
+		case SOUTH_EAST:
+			if (dangerMap.isDangerous(playerX + 1, playerY)) {
+				return dangerMap.isDangerous(playerX, playerY + 1) ? null : Direction.SOUTH;
+			}
+			if (dangerMap.isDangerous(playerX, playerY + 1)) {
+				return dangerMap.isDangerous(playerX + 1, playerY) ? null : Direction.EAST;
+			}
 			return Direction.SOUTH_EAST;
+		case SOUTH_WEST:
+			if (dangerMap.isDangerous(playerX - 1, playerY)) {
+				return dangerMap.isDangerous(playerX, playerY + 1) ? null : Direction.SOUTH;
+			}
+			if (dangerMap.isDangerous(playerX, playerY + 1)) {
+				return dangerMap.isDangerous(playerX - 1, playerY) ? null : Direction.WEST;
+			}
+			return Direction.SOUTH_WEST;
+		case WEST:
+			return dangerMap.isDangerous(playerX - 1, playerY) ? null : Direction.WEST;
 		default:
-			return null;
+			return direction;
 		}
-	}
-
-	private boolean isSafeToDropBomb() {
-		var dangerMapWithBomb = dangerMap.withAdditionalBomb(playerX, playerY, 2);
-		return getDirectionToNearestSafeTile(dangerMapWithBomb) != null;
 	}
 
 	private void updateVariables(ControllerInput input) {
