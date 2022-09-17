@@ -64,25 +64,6 @@ public class MapData {
 	}
 
 	/**
-	 * Returns the number of ticks a {@link Material#BOMB bomb} has remaining before
-	 * exploding at the given location. A value of 0 indicates that there is no
-	 * {@link Material#BOMB bomb} at all. If the given coordinates are outside of
-	 * the map, this method will fail silently.
-	 * 
-	 * @deprecated use {@link #getBomb(int, int)}
-	 * @param x the x coordinate
-	 * @param y the y coordinate
-	 */
-	@Deprecated(forRemoval = true)
-	public int getBombTimer(int x, int y) {
-		var bomb = getBomb(x, y);
-		if (bomb == null) {
-			return 0;
-		}
-		return bomb.getTimer();
-	}
-
-	/**
 	 * Returns the number of ticks an {@link Material#EXPLOSION explosion} has
 	 * remaining before it is removed from the {@link Map map}. A value of 0
 	 * indicates that there is no {@link Material#EXPLOSION explosion} at all. If
