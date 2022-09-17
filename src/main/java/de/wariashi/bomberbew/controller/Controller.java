@@ -17,6 +17,13 @@ public interface Controller {
 	 */
 	public String getName();
 
+	/**
+	 * Returns an image to represent the {@link Player} in the UI. This method will
+	 * be called several hundred times a second and should therefore be as efficient
+	 * as possible e.g. by caching the image.
+	 * 
+	 * @return an image representing the {@link Player} in the UI
+	 */
 	public BufferedImage getPlayerImage();
 
 	/**
@@ -24,7 +31,8 @@ public interface Controller {
 	 * to do next.
 	 * 
 	 * @param input a {@link ControllerInput} object containing some information
-	 *              about the current state of the {@link Game}
+	 *              about the current state of the {@link Game}. This value can
+	 *              never be <code>null</code>.
 	 * @return a {@link ControllerOutput} object which contains information about
 	 *         what the {@link Player} should do next. This value can never be
 	 *         <code>null</code>.
