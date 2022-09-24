@@ -17,13 +17,10 @@ import de.wariashi.bomberbew.model.projection.PlayerData;
 
 public class Tempii implements Controller {
 	
-//build a little home for freedom of movement
+/* currently not in use
 private final int HOME = 0;
-//build a path in the direction of the bigger dimension
 private final int SCOUT = 1;
-//build a path to the opponent
 private final int HUNT = 2;
-//try to kill the enemy
 private final int FIGHT = 3;
 
 private int phase = 0;
@@ -34,6 +31,9 @@ private final int TOP_LEFT = 0;
 private final int TOP_RIGHT = 1;
 private final int BOTTOM_LEFT = 2;
 private final int BOTTOM_RIGHT = 3;
+*/
+
+private int bombRange = 2;
 
 private List<Direction> path = new ArrayList<Direction>();
 
@@ -57,6 +57,12 @@ private List<Direction> path = new ArrayList<Direction>();
 		int currentX = playerData.getTileX();
 		int currentY = playerData.getTileY();
 		
+		/*bomb dem enemies
+		for(int i = 0; i<enemyData.size(); i++) {
+			if(enemyData.get(i).getTileX() == currentX && enemyData.get(i).getTileY() == currentY) {
+				out.setDropBomb(true);
+			}
+		}*/
 		
 		if(playerData.getOffsetX() == 0 && playerData.getOffsetY() == 0) {
 			//System.out.println("Step");
@@ -64,15 +70,52 @@ private List<Direction> path = new ArrayList<Direction>();
 			
 			int[][] dangerZone = getExplosionTimers(map);
 
-			//if there is no current plan, get one
+			//if there is no current escape plan, get one
 			if(path.isEmpty()) {
 				path = findEscapeRoute(currentX, currentY, currentX, currentY, dangerZone, map, null);
 			}
 			else {
-				out.setDirection(path.get(path.size()-1));
+				Direction next = path.get(path.size()-1);
+				out.setDirection(next);
 				path.remove(path.size()-1);
-				System.out.println("path");
-				return out;
+				System.out.println("default by safe path: " + next);
+				
+				boolean safe = true;
+				
+				switch(next) {
+					case NORTH:
+						if(currentY-1 >= 0 && dangerZone[currentX][currentY-1] != 0) {
+							safe = false;
+						}
+						break;
+					case EAST:
+						if(currentX+1 < map.getWidth() && dangerZone[currentX+1][currentY] != 0) {
+							safe = false;
+						}
+						break;
+					case SOUTH:
+						if(currentY+1 < map.getHeight() && dangerZone[currentX][currentY+1] != 0) {
+							safe = false;
+						}
+						break;
+					case WEST:
+						if(currentX-1 >= 0 && dangerZone[currentX-1][currentY] != 0) {
+							safe = false;
+						}
+						break;
+					default:
+						break;
+				}
+				
+				if(safe) {
+					if(path.size() >= 3 && destroysWalls(map, currentX, currentY, bombRange) > 0) {
+						out.setDropBomb(true);
+					}
+					return out;
+				}
+				else {
+					path.clear();
+				}
 			}
 			
 			for(int i = 0; i<path.size(); i++) {
@@ -84,6 +127,7 @@ private List<Direction> path = new ArrayList<Direction>();
 			
 			//player in dangerzone
 			if(dangerZone[currentX][currentY] != 0) {
+				path.clear();
 				Direction current = null;
 				int danger = dangerZone[currentX][currentY];
 				List<Direction> options = new ArrayList<Direction>();
@@ -93,7 +137,7 @@ private List<Direction> path = new ArrayList<Direction>();
 					if(dangerZone[currentX-1][currentY] == 0) {
 						options.add(Direction.WEST);
 					}
-					else if(dangerZone[currentX-1][currentY] > danger){
+					else if(dangerZone[currentX-1][currentY] >= danger){
 						danger = dangerZone[currentX-1][currentY];
 						current = Direction.WEST;
 					}					
@@ -103,7 +147,7 @@ private List<Direction> path = new ArrayList<Direction>();
 					if(dangerZone[currentX+1][currentY] == 0) {
 						options.add(Direction.EAST);
 					}
-					else if(dangerZone[currentX+1][currentY] > danger){
+					else if(dangerZone[currentX+1][currentY] >= danger){
 						danger = dangerZone[currentX+1][currentY];
 						current = Direction.EAST;
 					}					
@@ -113,7 +157,7 @@ private List<Direction> path = new ArrayList<Direction>();
 					if(dangerZone[currentX][currentY-1] == 0) {
 						options.add(Direction.NORTH);
 					}
-					else if(dangerZone[currentX][currentY-1] > danger){
+					else if(dangerZone[currentX][currentY-1] >= danger){
 						danger = dangerZone[currentX][currentY-1];
 						current = Direction.NORTH;
 					}					
@@ -123,7 +167,7 @@ private List<Direction> path = new ArrayList<Direction>();
 					if(dangerZone[currentX][currentY+1] == 0) {
 						options.add(Direction.SOUTH);
 					}
-					else if(dangerZone[currentX][currentY+1] > danger){
+					else if(dangerZone[currentX][currentY+1] >= danger){
 						danger = dangerZone[currentX][currentY+1];
 						current = Direction.SOUTH;
 					}					
@@ -132,25 +176,75 @@ private List<Direction> path = new ArrayList<Direction>();
 				if(!options.isEmpty()) {
 					int decision = (int)(Math.random()*options.size());
 					out.setDirection(options.get(decision));
-					System.out.println("decision" + "-" + options.size() + "-" + decision);
+					System.out.println("safety decision (in danger)" + "-" + options.size() + "-" + decision + ": " + options.get(decision));
 				}
 				else if(current != null){
 					out.setDirection(current);
+					System.out.println("safest option: " + current);
 				}
-				
-				//TODO moveBitch();
-				
 			}
 			//not in immediate danger
 			else {
 				if(!path.isEmpty()) {
 					//TODO check for good bomb location
-					if(Math.random() < 0.8) {
-						out.setDropBomb(true);
+					
+					int walls = destroysWalls(map, currentX, currentY, bombRange);
+					System.out.println("Walls " + walls);
+					
+					//drop chance calculation
+					double drop = 0;
+					if(walls == 0) {
+						drop = 0;
+					}else {
+						drop = 1;
+					}
+					if(isIntersection(currentX, currentY)) {
+						drop += 1;
 					}					
-					out.setDirection(path.get(path.size()-1));
-					path.remove(path.size()-1);
-					System.out.println("path continue");
+					for(int i = 0; i<enemyData.size(); i++) {
+						if(enemyData.get(i).getTileX() == currentX && enemyData.get(i).getTileY() == currentY) {
+							drop += 1; //Definitely do drop
+						}
+					}
+					
+					double random = Math.random();
+					if(random < drop) {
+						System.out.println(random + " < " + drop);
+						out.setDropBomb(true);
+						out.setDirection(path.get(path.size()-1));
+						System.out.println("drop and go: " + path.get(path.size()-1));
+						path.remove(path.size()-1);
+					}
+					else {
+						List<Direction> options = new ArrayList<Direction>();
+						
+						if(currentX-1 >= 0 && dangerZone[currentX-1][currentY] == 0 && !map.getMaterial(currentX-1, currentY).isSolid()) {
+							options.add(Direction.WEST);
+						}
+						if(currentX+1 < map.getWidth() && dangerZone[currentX+1][currentY] == 0 && !map.getMaterial(currentX+1, currentY).isSolid()) {
+							options.add(Direction.EAST);
+						}
+						if(currentY-1 >= 0 && dangerZone[currentX][currentY-1] == 0 && !map.getMaterial(currentX, currentY-1).isSolid()) {
+							options.add(Direction.NORTH);
+						}
+						if(currentY+1 < map.getHeight() && dangerZone[currentX][currentY+1] == 0 && !map.getMaterial(currentX, currentY+1).isSolid()) {
+							options.add(Direction.SOUTH);
+						}
+						if(!options.isEmpty()) {
+							
+							for (int i = 0; i<enemyData.size(); i++) {
+								if(playerData.getTileX() < enemyData.get(i).getTileX()) {
+									
+								}
+							}
+							
+							int decision = (int)(Math.random()*options.size());
+							out.setDirection(options.get(decision));
+							System.out.println("path no drop decision" + "-" + options.size() + "-" + decision + ": " + options.get(decision));
+						}
+						path.clear();
+					}
+					
 				}
 				else {
 					List<Direction> options = new ArrayList<Direction>();
@@ -170,7 +264,7 @@ private List<Direction> path = new ArrayList<Direction>();
 					if(!options.isEmpty()) {
 						int decision = (int)(Math.random()*options.size());
 						out.setDirection(options.get(decision));
-						System.out.println("decision" + "-" + options.size() + "-" + decision);
+						System.out.println("empty path decision" + "-" + options.size() + "-" + decision + ": " + options.get(decision));
 					}					
 				}				
 			}
@@ -221,49 +315,6 @@ private List<Direction> path = new ArrayList<Direction>();
 		int tmpX;
 		int tmpY;
 		
-		//check west		
-		if(last != Direction.EAST) {
-			tmpX = currentX-1;
-			tmpY = currentY;
-			if(tmpX < map.getWidth() && tmpX >= 0 && tmpY < map.getHeight() && tmpY >= 0) {
-				if(dangerZone[tmpX][tmpY] == 0 && !map.getMaterial(tmpX, tmpY).isSolid()) {
-					//path long enough?
-					if(tmpX != startX && tmpY != startY) {
-						path.add(Direction.WEST);
-						return path;
-					}else {
-						path = findEscapeRoute(startX, startY, tmpX, tmpY, dangerZone, map, Direction.WEST);
-						if(!path.isEmpty()) {
-							path.add(Direction.WEST);
-							return path;
-						}						
-					}
-				}
-			}
-		}
-		
-		//check east
-		if(last != Direction.WEST) {
-			tmpX = currentX+1;
-			tmpY = currentY;
-			if(tmpX < map.getWidth() && tmpX >= 0 && tmpY < map.getHeight() && tmpY >= 0) {
-				if(dangerZone[tmpX][tmpY] == 0 && !map.getMaterial(tmpX, tmpY).isSolid()) {
-					//path long enough?
-					if(tmpX != startX && tmpY != startY) {
-						path.add(Direction.EAST);
-						return path;
-					}else {
-						path = findEscapeRoute(startX, startY, tmpX, tmpY, dangerZone, map,Direction.EAST);
-						if(!path.isEmpty()) {
-							path.add(Direction.EAST);
-							return path;
-						}						
-					}
-				}
-			}
-		}
-		
-		
 		//check north
 		if(last != Direction.SOUTH) {
 			tmpX = currentX;
@@ -307,7 +358,114 @@ private List<Direction> path = new ArrayList<Direction>();
 				}
 			}
 		}
+		
+		//check west		
+		if(last != Direction.EAST) {
+			tmpX = currentX-1;
+			tmpY = currentY;
+			if(tmpX < map.getWidth() && tmpX >= 0 && tmpY < map.getHeight() && tmpY >= 0) {
+				if(dangerZone[tmpX][tmpY] == 0 && !map.getMaterial(tmpX, tmpY).isSolid()) {
+					//path long enough?
+					if(tmpX != startX && tmpY != startY) {
+						path.add(Direction.WEST);
+						return path;
+					}else {
+						path = findEscapeRoute(startX, startY, tmpX, tmpY, dangerZone, map, Direction.WEST);
+						if(!path.isEmpty()) {
+							path.add(Direction.WEST);
+							return path;
+						}						
+					}
+				}
+			}
+		}
+				
+		//check east
+		if(last != Direction.WEST) {
+			tmpX = currentX+1;
+			tmpY = currentY;
+			if(tmpX < map.getWidth() && tmpX >= 0 && tmpY < map.getHeight() && tmpY >= 0) {
+				if(dangerZone[tmpX][tmpY] == 0 && !map.getMaterial(tmpX, tmpY).isSolid()) {
+					//path long enough?
+					if(tmpX != startX && tmpY != startY) {
+						path.add(Direction.EAST);
+						return path;
+					}else {
+						path = findEscapeRoute(startX, startY, tmpX, tmpY, dangerZone, map,Direction.EAST);
+						if(!path.isEmpty()) {
+							path.add(Direction.EAST);
+							return path;
+						}						
+					}
+				}
+			}
+		}
 		return path;
+	}
+	
+	private int destroysWalls(MapData map, int currentX, int currentY, int range) {
+		int north = 0;
+		int east = 0;
+		int south = 0;
+		int west = 0;
+		
+		for(int i = 1; i <= range; i++) {
+			if(currentX-i >= 0) {
+				if( map.getMaterial(currentX-i, currentY) == Material.BRICK) {
+					west++;
+					//TODO check for power up(in 2.0)
+					break;
+				}
+				if( map.getMaterial(currentX-i, currentY) == Material.CONCRETE) {
+					break;
+				}
+				//TODO check for chain reaction
+			}
+		}
+		
+		for(int i = 1; i <= range; i++) {
+			if(currentY-i >= 0) {
+				if( map.getMaterial(currentX, currentY-i) == Material.BRICK) {
+					north++;
+					//TODO check for power up(in 2.0)
+					break;
+				}
+				if( map.getMaterial(currentX, currentY-i) == Material.CONCRETE) {
+					break;
+				}
+				//TODO check for chain reaction
+			}
+		}
+		
+		for(int i = 1; i <= range; i++) {
+			if(currentX+i < map.getWidth()) {
+				if( map.getMaterial(currentX+i, currentY) == Material.BRICK) {
+					east++;
+					//TODO check for power up(in 2.0)
+					break;
+				}
+				if( map.getMaterial(currentX+i, currentY) == Material.CONCRETE) {
+					break;
+				}
+				//TODO check for chain reaction
+			}
+		}
+		
+		for(int i = 1; i <= range; i++) {
+			if(currentY+i < map.getHeight()) {
+				if( map.getMaterial(currentX, currentY+i) == Material.BRICK) {
+					south++;
+					//TODO check for power up(in 2.0)
+					break;
+				}
+				if( map.getMaterial(currentX, currentY+i) == Material.CONCRETE) {
+					break;
+				}
+				//TODO check for chain reaction
+			}
+		}
+		
+		return (north + east + south + west);
 	}
 	
 	/**
