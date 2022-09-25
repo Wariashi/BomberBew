@@ -34,6 +34,7 @@ private final int BOTTOM_RIGHT = 3;
 */
 
 private int bombRange = 2;
+private boolean print = false;
 
 private List<Direction> path = new ArrayList<Direction>();
 
@@ -78,7 +79,8 @@ private List<Direction> path = new ArrayList<Direction>();
 				Direction next = path.get(path.size()-1);
 				out.setDirection(next);
 				path.remove(path.size()-1);
-				System.out.println("default by safe path: " + next);
+				if(print)
+					System.out.println("default by safe path: " + next);
 				
 				boolean safe = true;
 				
@@ -117,13 +119,14 @@ private List<Direction> path = new ArrayList<Direction>();
 					path.clear();
 				}
 			}
-			
-			for(int i = 0; i<path.size(); i++) {
-				System.out.print(path.get(i) + "-");
-			}
-			if(!path.isEmpty()) {
-				System.out.println();
-			}
+			if(print) {
+				for(int i = 0; i<path.size(); i++) {
+					System.out.print(path.get(i) + "-");
+				}
+				if(!path.isEmpty()) {
+					System.out.println();
+				}
+			}			
 			
 			//player in dangerzone
 			if(dangerZone[currentX][currentY] != 0) {
@@ -176,11 +179,15 @@ private List<Direction> path = new ArrayList<Direction>();
 				if(!options.isEmpty()) {
 					int decision = (int)(Math.random()*options.size());
 					out.setDirection(options.get(decision));
-					System.out.println("safety decision (in danger)" + "-" + options.size() + "-" + decision + ": " + options.get(decision));
+					if(print) {
+						System.out.println("safety decision (in danger)" + "-" + options.size() + "-" + decision + ": " + options.get(decision));
+					}					
 				}
 				else if(current != null){
 					out.setDirection(current);
-					System.out.println("safest option: " + current);
+					if(print) {
+						System.out.println("safest option: " + current);
+					}
 				}
 			}
 			//not in immediate danger
@@ -189,7 +196,9 @@ private List<Direction> path = new ArrayList<Direction>();
 					//TODO check for good bomb location
 					
 					int walls = destroysWalls(map, currentX, currentY, bombRange);
-					System.out.println("Walls " + walls);
+					if(print) {
+						System.out.println("Walls " + walls);
+					}
 					
 					//drop chance calculation
 					double drop = 0;
@@ -209,10 +218,14 @@ private List<Direction> path = new ArrayList<Direction>();
 					
 					double random = Math.random();
 					if(random < drop) {
-						System.out.println(random + " < " + drop);
+						if(print) {
+							System.out.println(random + " < " + drop);
+						}
 						out.setDropBomb(true);
 						out.setDirection(path.get(path.size()-1));
-						System.out.println("drop and go: " + path.get(path.size()-1));
+						if(print) {
+							System.out.println("drop and go: " + path.get(path.size()-1));
+						}
 						path.remove(path.size()-1);
 					}
 					else {
@@ -240,7 +253,9 @@ private List<Direction> path = new ArrayList<Direction>();
 							
 							int decision = (int)(Math.random()*options.size());
 							out.setDirection(options.get(decision));
-							System.out.println("path no drop decision" + "-" + options.size() + "-" + decision + ": " + options.get(decision));
+							if(print) {
+								System.out.println("path no drop decision" + "-" + options.size() + "-" + decision + ": " + options.get(decision));
+							}
 						}
 						path.clear();
 					}
@@ -264,7 +279,9 @@ private List<Direction> path = new ArrayList<Direction>();
 					if(!options.isEmpty()) {
 						int decision = (int)(Math.random()*options.size());
 						out.setDirection(options.get(decision));
-						System.out.println("empty path decision" + "-" + options.size() + "-" + decision + ": " + options.get(decision));
+						if(print) {
+							System.out.println("empty path decision" + "-" + options.size() + "-" + decision + ": " + options.get(decision));
+						}
 					}					
 				}				
 			}
